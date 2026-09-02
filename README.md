@@ -37,8 +37,6 @@ You are given **Tetris-shaped polyominoes** (from the classic 7-brick set, plus 
 Every shape you place generates **passive income** over time. The base value of each shape is randomly determined when you obtain it — meaning two identical-looking pieces can have vastly different economic potential.
 
 - **Base Value:** Each shape has a hidden numeric worth (e.g., 5–50 coins per tick).
-- **Multipliers:** Some shapes come with built-in multipliers (e.g., 2x, 3x) that apply to their own income.
-- **Synergy:** Shapes placed adjacent to each other may receive minor adjacency bonuses (if upgraded later).
 
 ---
 
@@ -71,7 +69,7 @@ Chests are the heartbeat of Idle Tetris. They appear periodically or can be purc
 This chest grants you **one random Tetris shape** to add to your inventory.
 
 - **Rarity distribution:** Every shape has an equal chance to appear (uniform probability).
-- **Value variance:** Even among identical shapes, their **base value** and **multiplier** are randomized. You might pull a lowly 5-coin I-piece or a glorious 50-coin T-piece with a 3x multiplier.
+- **Value variance:** Even among identical shapes, their **base value**  are randomized. You might pull a lowly 5-coin I-piece or a glorious 50-coin T-piece with a 3x multiplier.
 - **Strategic use:** Stockpile high-value pieces for row/column completions, or use cheap ones to fill gaps and force combos.
 
 ---
@@ -96,7 +94,6 @@ This chest triggers a **temporary global event** that affects the entire game bo
 | 🌀 **Double Drop** | Every shape placed generates an identical copy in your inventory | 5 minutes |
 | ⏳ **Time Freeze** | The grid stops filling, no new pieces spawn, and you can place shapes freely without pressure | 20 seconds |
 | 📈 **Value Surge** | All row/column completion rewards are increased by 50% | 5 minutes |
-| 🔄 **Rotation Rush** | You can rotate shapes for free and without cooldown | 5 minutes |
 
 - **Strategy:** Time your event openings carefully — activating a Gold Rush right before a big row/column combo can yield astronomical returns.
 
@@ -106,16 +103,14 @@ This chest triggers a **temporary global event** that affects the entire game bo
 
 Every shape you obtain from Chest #1 is stored in your **Inventory**, a scrollable list that shows:
 
-- Shape type (I, O, T, S, Z, J, L — plus rare variants)
+- Shape type (I, O, T, S, Z, J, L)
 - Base value
-- Current multiplier
 - Total income contribution
 
 **Key Rules:**
 - You may **place shapes in any order** and at any time.
 - There is **no time limit** on when you must place a shape.
 - You cannot delete or discard shapes — but you can upgrade them to increase their utility.
-- If your inventory grows too large, you can sell shapes back for a fraction of their value (unlocking more space and liquid cash).
 
 ---
 
@@ -126,10 +121,6 @@ Your difficulty choice affects more than just grid size — it influences the en
 | Aspect | Easy | Normal | Hard |
 |--------|------|--------|------|
 | Grid Size | 10x10 | 8x8 | 6x6 |
-| Shape Spawn Rate | Slow | Moderate | Fast |
-| Chest Cost | Cheap | Moderate | Expensive |
-| Row/Column Multiplier | x1 | x1.5 | x2 |
-| Event Frequency | Rare | Common | Very Common |
 | Game Over Risk | Low | Medium | High |
 
 **Recommendation:** Start on Easy to learn the mechanics, then graduate to Normal for a balanced experience, and finally conquer Hard for the ultimate test of skill and luck.
@@ -146,15 +137,13 @@ Your difficulty choice affects more than just grid size — it influences the en
 
 ---
 
-## 🏆 Endgame & Leaderboards
+## 🏆 Endgame
 
 Once you've mastered the basics, aim for the stars:
 - **High Score Runs:** Maximize your total wealth before the grid fills.
 - **Speed Runs:** Complete the game on Hard difficulty in under 10 minutes.
 - **Perfect Grids:** Fill the entire grid without ever triggering a game over.
 - **Combo Kings:** Achieve a 4x or higher row/column combo multiplier in a single move.
-
-*(Leaderboards and achievements are planned for future updates!)*
 
 ---
 
@@ -169,7 +158,3 @@ Now go forth, place your blocks, and may the RNG be ever in your favor.
 ---
 
 **🎮 Ready to play? Choose your difficulty, open your first chest, and start your journey to idle fortune!**
-
----
-
-*📝 Note: This game is a work in progress. Feedback and suggestions are always welcome. Happy stacking!*

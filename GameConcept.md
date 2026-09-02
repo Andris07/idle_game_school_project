@@ -64,12 +64,6 @@ A projekt fejlesztése során az alábbi **konkrét, mérhető célokat** tűzt�
 - [ ] Eredmények és teljesítmények gyűjthető rendszere
 - [ ] Mentési és betöltési funkció (böngésző local storage)
 
-### 🥉 **Harmadlagos célok (Skálázhatóság és közösség)**
-- [ ] Globális ranglista implementálása (opcionális, backend függő)
-- [ ] Napi kihívások rendszere
-- [ ] Többjátékos mód (versenyzés vagy kooperáció)
-- [ ] Egyedi alakzatok tervezésének lehetősége
-
 ---
 
 ## 3. Összehasonlítás más hasonló játékokkal
