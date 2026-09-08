@@ -1,28 +1,4 @@
-# Idle Tetris – MySQL Database Diagram
-
-> **Sources:** `GameConcept.md` and the example `data.json` structure.
->
-> This schema translates the currently documented game mechanics and JSON structure into a relational MySQL database model. Where the source material does not define an exact field or business rule, the proposed design is explicitly marked as such.
-
-## 1. Model Overview
-
-The central entity is `game_session`, representing one individual game run and its current or completed state.
-
-Direct mapping from `data.json`:
-
-- `preset.difficulty` → `preset.difficulty` / `game_session.difficulty_id`
-- `preset.buffs.*` → `preset_buff`
-- `inventory.*` → `inventory_item`
-- `inventory_item.shapename` → `shape`
-- `inventory_item.value` → `inventory_item.value`
-- `inventory_item.xcrod` → `inventory_item.x_coord`
-- `inventory_item.ycord` → `inventory_item.y_coord`
-
-The GameConcept describes additional systems such as passive income, row/column completion, chests, timed events, and statistics. These are represented by additional relational tables.
-
----
-
-## 2. ER Diagram
+## 1. ER Diagram
 
 ```mermaid
 erDiagram
