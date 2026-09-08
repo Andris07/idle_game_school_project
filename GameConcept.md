@@ -30,14 +30,12 @@ A weboldal egy **teljes értékű, interaktív játékalkalmazás**, amely a kö
 | Funkció | Leírás |
 |---------|--------|
 | 🎮 **Játékmenet** | Valós idejű tetris elemek elhelyezése egy dinamikus rácson |
-| 📊 **Nehézségi szintek** | Három nehézségi fokozat (Easy, Normal, Hard), eltérő táblaméretekkel és gazdasági paraméterekkel |
+| 📊 **Nehézségi szintek** | Három nehézségi fokozat (Easy, Normal, Hard), eltérő táblaméretekkel |
 | 💰 **Passzív jövedelem** | Minden elhelyezett elem automatikusan bevételt termel |
 | 🧩 **Sor/oszlop teljesítés** | Teljes sorok vagy oszlopok különleges bónuszokat aktiválnak, amelyek exponenciálisan növekedhetnek |
 | 🎁 **Láda rendszer** | Háromféle láda (alakzat, fejlesztés, esemény) véletlenszerű tartalommal |
-| 📦 **Raktárkészlet** | Az összes megszerzett alakzat tárolása és kezelése |
+| 📦 **Raktárkészlet** | Az összes megszerzett alakzat tárolása és kezelése, csak 8 férőhely |
 | ⏳ **Időzített események** | 5 perces vagy 20 másodperces időkorlátos bónuszok |
-| 📈 **Pontszámítás** | Részletes statisztikák és pénzügyi kimutatások |
-| 🔄 **Újraindítás** | Lehetőség a játék újrakezdésére anélkül, hogy a megszerzett fejlesztések elvesznének |
 | 📱 **Reszponzív dizájn** | Asztali és mobil eszközökön is teljes mértékben működőképes |
 
 ---
@@ -47,9 +45,9 @@ A weboldal egy **teljes értékű, interaktív játékalkalmazás**, amely a kö
 A projekt fejlesztése során az alábbi **konkrét, mérhető célokat** tűztük ki magunk elé:
 
 ### 🥇 **Elsődleges célok (Alap működés)**
-- [x] Teljesen működőképes játékmotor implementálása
+- [x] Teljesen működőképes játék implementálása
 - [x] Három nehézségi szint bevezetése eltérő táblaméretekkel
-- [x] Alakzatok generálása és elhelyezése drag-and-drop vagy kattintásos mechanikával
+- [x] Alakzatok generálása és elhelyezése kattintásos mechanikával
 - [x] Passzív jövedelem számítási rendszer kidolgozása
 - [x] Sorok és oszlopok felismerése és bónuszok kiosztása
 - [x] Háromféle láda (alakzat, fejlesztés, esemény) implementálása
@@ -58,25 +56,23 @@ A projekt fejlesztése során az alábbi **konkrét, mérhető célokat** tűzt�
 - [x] Reszponzív felület kialakítása
 
 ### 🥈 **Másodlagos célok (Felhasználói élmény)**
-- [ ] Intuitív oktatóanyag és segítségrendszer
-- [ ] Hang- és vizuális visszajelzések minden interakcióhoz
-- [ ] Részletes statisztikai panel (összjövedelem, legnagyobb kombó, eltelt idő stb.)
-- [ ] Eredmények és teljesítmények gyűjthető rendszere
-- [ ] Mentési és betöltési funkció (böngésző local storage)
+- Intuitív oktatóanyag és segítségrendszer
+- Hang- és vizuális visszajelzések minden interakcióhoz
+- Mentési és betöltési funkció (böngésző local storage)
 
 ---
 
 ## 3. Összehasonlítás más hasonló játékokkal
 
-| Szempont | **Idle Tetris** | Klasszikus Tetris | Hagyományos Idle játékok | Tetris + idle kombinációk |
-|----------|----------------|-------------------|--------------------------|---------------------------|
-| **Játékmechanika** | Tetris elhelyezés + idle jövedelem + ládák | Csak elhelyezés és sorok törlése | Csak kattintás és várakozás | Ritkán, felületesen kombinált |
-| **Stratégiai mélység** | 🔥 Magas – minden döntés számít | Közepes – gyors reakciók | Alacsony – főleg várakozás | Változó, általában sekélyes |
-| **Szerencse faktor** | 🎲 Kiegyensúlyozott – ládák véletlen tartalommal | Nincs | Magas – véletlenszerű jutalmak | Általában túlzottan szerencse alapú |
-| **Újrajátszhatóság** | 🌟 Kiváló – minden játék más | Jó – de ugyanaz a minta ismétlődik | Gyenge – unalmassá válik | Közepes |
-| **Grafikai megjelenés** | Modern, letisztult, vizuálisan vonzó | Klasszikus, pixel art | Változó, gyakran egyszerű | Általában elavult |
-| **Platform támogatás** | 💻📱 Teljesen reszponzív (böngésző) | Főleg asztali | Főleg mobilos alkalmazások | Korlátozott |
-| **Tanulási görbe** | 📈 Enyhe – könnyű kezdeni, de nehéz mesterré válni | Meredek – azonnali reflexek | Nagyon alacsony | Közepes |
+| Szempont | **Idle Tetris** | Klasszikus Tetris | Hagyományos Idle játékok |
+|----------|----------------|-------------------|--------------------------|
+| **Játékmechanika** | Tetris elhelyezés + idle jövedelem + ládák | Csak elhelyezés és sorok törlése | Csak kattintás és várakozás |
+| **Stratégiai mélység** | 🔥 Magas – minden döntés számít | Közepes – gyors reakciók | Alacsony – főleg várakozás |
+| **Szerencse faktor** | 🎲 Kiegyensúlyozott – ládák véletlen tartalommal | Nincs | Magas/Nincs – véletlenszerű/Fix jutalmak |
+| **Újrajátszhatóság** | 🌟 Kiváló – minden játék más | Jó – de ugyanaz a minta ismétlődik | Gyenge – unalmassá válik |
+| **Grafikai megjelenés** | Modern, letisztult, vizuálisan vonzó | Klasszikus, pixel art | Változó, gyakran egyszerű |
+| **Platform támogatás** | 💻📱 Teljesen reszponzív (böngésző) | Főleg asztali | Főleg mobilos alkalmazások |
+| **Tanulási görbe** | 📈 Enyhe – könnyű kezdeni, de nehéz mesterré válni | Meredek – azonnali reflexek | Nagyon alacsony |
 
 ---
 
@@ -97,9 +93,6 @@ A három nehézségi szint lehetővé teszi, hogy **mindenki megtalálja a szám
 ### ✅ **Nincs szükség letöltésre**
 Mivel a játék **teljesen böngésző alapú**, bárki, bármikor, bármilyen eszközről azonnal játszhat – regisztráció, telepítés vagy fizetés nélkül.
 
-### ✅ **Folyamatos fejlesztés és frissítés**
-A projekt nyílt végű, így a felhasználói visszajelzések alapján **folyamatosan bővíthető** új funkciókkal, eseményekkel és tartalmakkal.
-
 ---
 
 ## 5. Kiknek, milyen korosztályban ajánlott?
@@ -111,7 +104,7 @@ Bár a játék **alapvetően mindenki számára elérhető és élvezhető**, a 
 | Korcsoport | Ajánlás indoklása |
 |------------|-------------------|
 | **12–15 év** | Könnyen elsajátítható az alapmechanika; fejleszti a logikus gondolkodást és a tervezőképességet. Szülői felügyelet mellett ideális szórakozás. |
-| **16–25 év** | 🔥 **PRIMER CÉLCSOPORT** – A játék stratégiai mélysége és a szerencsejáték elemek (ládák) vonzóak a fiatal felnőttek számára, akik szeretik a kihívásokat és a versenyt. |
+| **16–25 év** | 🔥 **FŐ CÉLCSOPORT** – A játék stratégiai mélysége és a szerencsejáték elemek (ládák) vonzóak a fiatal felnőttek számára, akik szeretik a kihívásokat és a versenyt. |
 | **26–35 év** | Másodlagos célcsoport – Azok számára ideális, akik egy-egy rövidebb, de tartalmas szünetben szeretnének kikapcsolódni, miközben aktívan használják az agyukat. |
 | **36–50 év** | Harmadlagos célcsoport – A klasszikus Tetris nosztalgia és az idle mechanika nyugtató ritmusa vonzó lehet a régebbi játékosok számára is. |
 | **50+ év** | Alkalmi játékosok – Egyszerű kezelőfelület, alacsony tanulási görbe, és a passzív jövedelem miatt kevésbé stresszes élmény. |
@@ -128,20 +121,19 @@ A játék különösen ajánlott azoknak, akik:
 
 ## 6. Miért érdemes ezt a játékot választani?
 
-### 🏆 **Versenyelőnyök más játékokkal szemben**
+### 🏆 **Előnyök más játékokkal szemben**
 
 | Szempont | Idle Tetris előnye |
 |----------|-------------------|
 | **Egyediség** | Nincs másik játék, amely pontosan ezt a három műfaji elemet ilyen arányban keverné |
-| **Ingyenesség** | Teljesen ingyenes, rejtett költségek vagy mikro-tranzakciók nélkül |
+| **Ingyenesség** | Teljesen ingyenes, rejtett költségek vagy mikro-tranzakciók és reklámok nélkül |
 | **Hozzáférhetőség** | Bármilyen eszközről elérhető, nincs szükség regisztrációra |
 | **Tartósság** | Magas újrajátszhatóság a véletlenszerű elemek és a különböző nehézségi szintek miatt |
-| **Fejlesztői elköteleződés** | Rendszeres frissítések és közösségi visszajelzés alapú fejlesztés |
 | **Oktatási érték** | Fejleszti a térbeli gondolkodást, a tervezőképességet és a kockázatkezelési készségeket |
 
 ### 💡 **Kinek ajánljuk különösen?**
 - **Casual játékosoknak**, akik napi 10-15 percet szánnának egy tartalmas játékra
-- **Stratégiai játékok rajongóinak**, akik szeretik a mély döntési fákat
+- **Stratégiai játékok rajongóinak**, akik szeretik a mély döntési lehetőségeket
 - **Idle játékok kedvelőinek**, akik élvezik a passzív fejlődést
 - **Tetris veteránoknak**, akik új kihívást keresnek a klasszikus formulában
 - **Diákoknak és fiatal szakembereknek**, akik szünetekben szeretnének kikapcsolódni
