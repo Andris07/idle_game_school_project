@@ -1,160 +1,155 @@
-# 🧩 Idle Tetris: The Ultimate Strategy & Gambling Experience
+# 🧩 Idle Tetris: A végső stratégiai és szerencsejáték-élmény
 
-Welcome to **Idle Tetris**, a unique blend of classic block-stacking mechanics, idle game progression, and high-stakes risk management. In this game, every decision matters — from where you place a single piece to which chests you decide to open. Your goal is simple yet ambitious: **accumulate as much wealth as possible** through strategic placement, timely upgrades, and lucky event rolls.
-
----
-
-## 🎯 Core Philosophy
-> *"Fortune favors the bold — but only those who plan ahead."*
-
-Idle Tetris is not just about clearing lines. It's about **optimizing your grid**, **min-maxing your income**, and **gambling wisely** on chests that could skyrocket your earnings or leave you scrambling for space. Whether you're a casual player looking for a relaxing idle experience or a hardcore strategist chasing leaderboard dominance, the difficulty you choose will shape your entire journey.
+Üdvözlünk az **Idle Tetris**-ben, a klasszikus blokkpakolós mechanika, az inaktív fejlődés és a magas tétű kockázatkezelés egyedülálló ötvözetében. Ebben a játékban minden döntés számít – attól kezdve, hogy hova helyezel egy darabot, egészen addig, hogy melyik ládát nyitod ki. A célod egyszerű, mégis nagyratörő: **minél több vagyont felhalmozni** stratégiai elhelyezéssel, időben eszközölt fejlesztésekkel és szerencsés eseménydobásokkal.
 
 ---
 
-## 🎮 Gameplay Overview
+## 🎯 Alapfilozófia
+> *"A szerencse a bátraké – de csak azoké, akik előre terveznek."*
 
-### 🧱 The Game Grid
-Your playing field is a square grid whose dimensions are determined by the difficulty level you select at the start of the game. This grid is your canvas, your kingdom, and your prison — treat it with respect.
+Az Idle Tetris nem csupán a sorok eltüntetéséről szól. Hanem a **rács optimalizálásáról**, a **bevételed maximalizálásáról** és a **ládákkal való okos szerencsejátékról**, amelyek akár az egekbe repíthetik a bevételeidet, vagy arra kényszeríthetnek, hogy görcsösen keresd a szabad helyet. Akár egy laza játékos vagy, aki kikapcsolódásra vágyik, akár egy kemény stratég, a kiválasztott nehézségi szint végigkíséri az egész utadat.
 
-| Difficulty | Grid Size | Total Cells | Strategic Vibe |
+---
+
+## 🎮 Játékmenet-áttekintés
+
+### 🧱 A játékrács
+A játéktér egy négyzetrács, melynek méreteit a játék elején kiválasztott nehézségi szint határozza meg. Ez a rács a vásznad, a birodalmad és a börtönöd – kezeld tisztelettel.
+
+| Nehézség | Rácsméret | Összes cella | Stratégiai hangulat |
 |------------|-----------|-------------|----------------|
-| 🟢 **Easy**   | 10x10     | 100         | Forgiving, spacious, ideal for testing strategies |
-| 🟡 **Normal** | 8x8       | 64          | Balanced, tight enough to challenge, open enough to breathe |
-| 🔴 **Hard**   | 6x6       | 36          | Claustrophobic, unforgiving, only for the truly daring |
+| 🟢 **Könnyű** | 10x10     | 100         | Megbocsátó, tágas, ideális stratégiák tesztelésére |
+| 🟡 **Normál** | 8x8       | 64          | Kiegyensúlyozott, éppen elég szűk a kihíváshoz, de elég tág a lélegzethez |
+| 🔴 **Nehéz** | 6x6       | 36          | Klausztrofób, könyörtelen, csak az igazán merészeknek |
 
 ---
 
-### 📦 Placing Your Shapes
-You are given **Tetris-shaped polyominoes** (from the classic 7-brick set, plus variations) that you can place anywhere on the grid **as long as there is enough contiguous free space** for the shape's exact form.
+### 📦 Alakzatok elhelyezése
+**Tetris-alakú poliominoakat** kapsz (a klasszikus 7 formából álló készletből, plusz variációkkal), amelyeket bárhová elhelyezhetsz a rácson, **amennyiben van elegendő összefüggő szabad terület** az alakzat pontos formájához.
 
-- ✅ You may rotate or flip shapes before placing them.
-- ❌ Once placed, a shape is **permanently locked** — no repositioning, no refunds.
-- 🧠 Strategic placement is key: leave room for future high-value pieces, and plan for row/column completion combos.
-
----
-
-### 💰 Passive Income & Value System
-Every shape you place generates **passive income** over time. The base value of each shape is randomly determined when you obtain it — meaning two identical-looking pieces can have vastly different economic potential.
-
-- **Base Value:** Each shape has a hidden numeric worth (e.g., 5–50 coins per tick).
+- ✅ Elforgathatod az alakzatokat elhelyezés előtt.
+- ❌ Elhelyezés után az alakzat **véglegesen rögzül** – nincs áthelyezés, nincs visszatérítés.
+- 🧠 A stratégiai elhelyezés kulcsfontosságú: hagyj helyet a jövőbeli értékes daraboknak, és tervezz sor-/oszlopkiegészítési kombókat.
 
 ---
 
-### 🧩 Row & Column Completion — The Real Money Maker
-This is where Idle Tetris transforms from a passive collector into a **combo-chasing adrenaline rush**.
+### 💰 Passzív jövedelem és értékrendszer
+Minden egyes elhelyezett alakzat **passzív jövedelmet** termel az idő múlásával. Az egyes alakzatok alapértéke véletlenszerűen kerül meghatározásra, amikor megszerzed – ami azt jelenti, hogy két egyforma kinézetű darab gazdasági potenciálja teljesen eltérő lehet.
 
-- When you **complete an entire row** (all cells filled), the game calculates the **total value of every shape in that row** and multiplies it by the number of shapes that contributed to that row.
-- The same applies to **columns** — a full column triggers a similar reward calculation.
-- **🔥 COMBO BONUS 🔥** — If you complete **multiple rows and/or columns** in a single placement (or during a freeze event), the rewards are **multiplied against each other**. For example:
-  - 2 rows completed → reward × 2
-  - 1 row + 1 column → reward × 4 (2 × 2)
-  - 2 rows + 2 columns → reward × 16 (4 × 4)
+- **Alapérték:** Minden alakzatnak van egy rejtett számszerű értéke (pl. 5–50 érme tickenként) amit hozzáad a véletlenszerűen generált értékhez.
+
+---
+
+### 🧩 Sor- és oszlopkiegészítés – Az igazi pénzkereső
+Itt válik az Idle Tetris a passzív gyűjtögetésből **kombóvadász adrenalinlöketgé**.
+
+- Amikor **kitöltesz egy teljes sort** (az összes cella megtelt), a játék kiszámolja **az adott sorban lévő összes alakzat összértékét**, és megszorozza azon alakzatok számával, amelyek hozzájárultak a sorhoz.
+- Ugyanez vonatkozik az **oszlopokra** – egy teljes oszlop hasonló jutalomszámítást indít el.
+- **🔥 KOMBÓ BÓNUSZ 🔥** – Ha egyetlen elhelyezéssel (vagy egy befagyasztási esemény során) **több sort és/vagy oszlopot** is kitöltesz, a jutalmak **egymással szorzódnak** oszloponkénti/soronkénti értékeikkel.
   
-  This exponential scaling can yield **extraordinary windfalls** — but it requires masterful planning and a little luck.
+  Ez az exponenciális skálázás **rendkívüli nyereményeket** eredményezhet – de ehhez mesteri tervezés és egy kis szerencse szükséges.
 
 ---
 
-### 💀 Game Over Condition
-If at any point the grid becomes **completely filled** and you have no valid placement for any shape in your inventory, **the game ends** and you lose all unbanked progress. However, any permanent upgrades or currency you've invested in carry over to your next run (if you choose to restart).
+### 💀 Játék vége feltétel
+Ha bármikor a rács **teljesen megtelik**, és a készletedben egyetlen alakzatnak sincs érvényes helye, **a játék véget ér**, és elveszíted az összes előrehaladásodat.
 
 ---
 
-## 🎁 The Three Chests — Your Path to Riches
+## 🎁 A három láda – Az út a gazdagsághoz
 
-Chests are the heartbeat of Idle Tetris. They appear periodically or can be purchased with in-game currency. Each chest serves a distinct purpose and offers a different flavor of risk vs. reward.
-
----
-
-### 🟦 Chest #1 — The Shape Chest *(Tetromino Arsenal)*
-This chest grants you **one random Tetris shape** to add to your inventory.
-
-- **Rarity distribution:** Every shape has an equal chance to appear (uniform probability).
-- **Value variance:** Even among identical shapes, their **base value**  are randomized. You might pull a lowly 5-coin I-piece or a glorious 50-coin T-piece with a 3x multiplier.
-- **Strategic use:** Stockpile high-value pieces for row/column completions, or use cheap ones to fill gaps and force combos.
+A ládák az Idle Tetris szívét jelentik. Ezek megvásárolhatók játékbeli valutáért. Mindegyik láda más-más célt szolgál, és más-más ízű kockázat-jutalom dinamikát kínál.
 
 ---
 
-### 🟧 Chest #2 — The Upgrade Chest *(Augmentation Vault)*
-This chest allows you to **enhance a shape of your choice** from your inventory.
+### 🟦 1. láda – Az alakzatláda *(Tetromino-arszenál)*
+Ez a láda **egy véletlenszerű Tetris-alakzatot** ad a készletedhez.
 
-- **Two upgrade types:**
-  1. **Flat Increase:** Boost the shape's base value by a fixed amount (e.g., +10 coins).
-  2. **Multiplier Boost:** Multiply the shape's current total value by a factor (e.g., 1.5x, 2x).
-- **Risk:** Upgrades are permanent, so choose wisely — upgrading a weak shape early might pay off later if it becomes part of a huge combo.
-- **Synergy:** Upgraded shapes contribute more to row/column rewards, making them invaluable for high-score runs.
+- **Ritkaságeloszlás:** Minden alakzatnak egyenlő esélye van a megjelenésre (egyenletes valószínűség).
+- **Értékváltozatosság:** Még az egyforma alakzatok között is **az értékük** véletlenszerű. Lehet, hogy egy nyomorult 5 érmés Z-darabot húzol, vagy egy ragyogó 50 érmés T-darabot.
+- **Stratégiai felhasználás:** Gyűjts nagy értékű darabokat sor-/oszlopkiegészítésekhez, vagy használj olcsókat a hézagok kitöltésére és a kombók erőltetésére.
 
 ---
 
-### 🟪 Chest #3 — The Event Chest *(Chaos Catalyst)*
-This chest triggers a **temporary global event** that affects the entire game board and your income.
+### 🟧 2. láda – A fejlesztőláda *(Erősítő páncélszekrény)*
+Ez a láda lehetővé teszi, hogy **egy általad választott alakzatot** fejlessz a készletedből.
 
-| Event Name | Effect | Duration |
+- **Két fejlesztéstípus:**
+  1. **Fix növekmény:** Az alakzat alapértékének növelése egy fix összeggel (pl. +10 érme).
+  2. **Szorzónövelés:** Az alakzat aktuális alapértékének megszorzása egy tényezővel (pl. 1,1x, 1.3x).
+- **Kockázat:** A fejlesztések véglegesek, tehát bölcsen válassz – egy gyenge alakzat korai fejlesztése később megtérülhet, ha egy nagy kombó részévé válik.
+- **Összehangolás:** A fejlesztett alakzatok többet hozzájárulnak a sor-/oszlopjutalmakhoz, így felbecsülhetetlen értékűvé válnak a magas pontszámú futásokhoz.
+
+---
+
+### 🟪 3. láda – Az eseményláda *(Káosz-katalizátor)*
+Ez a láda egy **ideiglenes globális eseményt** indít el, amely hatással van az egész játéktáblára és a bevételeidre.
+
+| Esemény neve | Hatás | Időtartam |
 |------------|--------|----------|
-| 💰 **Gold Rush** | All passive income is multiplied by 2x | 5 minutes |
-| 🌀 **Double Drop** | Every shape placed generates an identical copy in your inventory | 5 minutes |
-| ⏳ **Time Freeze** | The grid stops filling, no new pieces spawn, and you can place shapes freely without pressure | 20 seconds |
-| 📈 **Value Surge** | All row/column completion rewards are increased by 50% | 5 minutes |
+| 💰 **Aranyláz** | Minden passzív jövedelem megszorzódik 2x-el | 5 perc |
+| 🌀 **Dupla alakzat** | Minden kinyitott alakzat egy azonos másolatot generál a készletedben | 5 perc |
+| ⏳ **Időbefagyasztás** | A rács leáll, nem kombinálódnak a sorok/oszlopok, nyomás nélkül helyezhetsz el alakzatokat hatalmas profitért | 20 másodperc |
+| 📈 **Értékrobbanás** | Az összes sor-/oszlopkiegészítési jutalom 50%-kal nő | 5 perc |
 
-- **Strategy:** Time your event openings carefully — activating a Gold Rush right before a big row/column combo can yield astronomical returns.
-
----
-
-## 🎒 The Inventory — Your Strategic Arsenal
-
-Every shape you obtain from Chest #1 is stored in your **Inventory**, a scrollable list that shows:
-
-- Shape type (I, O, T, S, Z, J, L)
-- Base value
-- Total income contribution
-
-**Key Rules:**
-- You may **place shapes in any order** and at any time.
-- There is **no time limit** on when you must place a shape.
-- You cannot delete or discard shapes — but you can upgrade them to increase their utility.
+- **Stratégia:** Időzítsd jól az eseményládák nyitását – egy Aranyláz aktiválása egy nagy sor-/oszlopkombó előtt csillagászati hozamokat eredményezhet.
 
 ---
 
-## ⚙️ Difficulty Scaling — Choose Your Challenge
+## 🎒 A készlet – A stratégiai arzenálod
 
-Your difficulty choice affects more than just grid size — it influences the entire game economy.
+Minden alakzat, amelyet az 1. ládából szerzel, a **készletedben** tárolódik, 8 tárolóegységben, amely mutatja:
 
-| Aspect | Easy | Normal | Hard |
+- Alakzat típusát (I, O, T, S, Z, J, L)
+- Teljes bevételi hozzájárulását
+
+**Fő szabályok:**
+- Az alakzatokat **bármilyen sorrendben** és bármikor elhelyezheted.
+- **Nincs időkorlát** arra vonatkozóan, hogy mikor kell elhelyezned egy alakzatot.
+- Nem törölhetsz vagy dobhatsz el alakzatokat – de fejlesztheted őket a hasznosságuk növelése érdekében.
+
+---
+
+## ⚙️ Nehézségi skálázás – Válaszd ki a kihívást
+
+A nehézségi választásod nemcsak a rács méretét érinti – hatással van az egész játékgazdaságra is.
+
+| Szempont | Könnyű | Normál | Nehéz |
 |--------|------|--------|------|
-| Grid Size | 10x10 | 8x8 | 6x6 |
-| Game Over Risk | Low | Medium | High |
+| Rácsméret | 10x10 | 8x8 | 6x6 |
+| Játék vége kockázat | Alacsony | Közepes | Magas |
 
-**Recommendation:** Start on Easy to learn the mechanics, then graduate to Normal for a balanced experience, and finally conquer Hard for the ultimate test of skill and luck.
-
----
-
-## 🧠 Advanced Strategies for Veteran Players
-
-- **Corner Stacking:** Place high-value pieces in corners to maximize row/column completion potential.
-- **Gap Management:** Leave intentional gaps to funnel future pieces into combo opportunities.
-- **Upgrade Hoarding:** Save upgrade chests for pieces that are part of nearly-complete rows/columns.
-- **Event Chaining:** Open an Event Chest immediately after a big combo to double down on momentum.
-- **Inventory Cycling:** Keep a mix of cheap filler pieces and expensive power pieces to adapt to any grid state.
+**Javaslat:** Kezdd Könnyűn a mechanikák elsajátításához, majd lépj tovább Normálra a kiegyensúlyozott élményért, végül hódítsd meg a Nehéz szintet a képességeid és szerencséd végső próbájaként.
 
 ---
 
-## 🏆 Endgame
+## 🧠 Haladó stratégiák tapasztalt játékosoknak
 
-Once you've mastered the basics, aim for the stars:
-- **High Score Runs:** Maximize your total wealth before the grid fills.
-- **Speed Runs:** Complete the game on Hard difficulty in under 10 minutes.
-- **Perfect Grids:** Fill the entire grid without ever triggering a game over.
-- **Combo Kings:** Achieve a 4x or higher row/column combo multiplier in a single move.
-
----
-
-## 🙌 Final Words
-
-Idle Tetris is a game of **patience, precision, and a pinch of luck**. Every chest you open, every piece you place, and every row you clear brings you closer to becoming a true Tetris tycoon. The grid is your canvas — paint it wisely.
-
-> *"The best players don't just react — they prepare."*
-
-Now go forth, place your blocks, and may the RNG be ever in your favor.
+- **Sarokpakolás:** Helyezz nagy értékű darabokat a sarkokba, hogy maximalizáld a sor-/oszlopkiegészítési potenciált.
+- **Hézagkezelés:** Hagyj szándékosan réseket, hogy a jövőbeli darabokat kombólehetőségekbe tereld.
+- **Fejlesztések halmozása:** Tartsd meg a fejlesztő ládákat olyan darabokhoz, amelyek majdnem kész sorok/oszlopok részei.
+- **Eseményláncolás:** Nyiss egy eseményládát közvetlenül egy nagy kombó előtt, hogy megsokszorozd a lendületed.
+- **Készletváltogatás:** Tarts egy keveréket olcsó töltelékdarabokból és drága erődarabokból, hogy bármilyen rácsállapothoz alkalmazkodni tudj.
 
 ---
 
-**🎮 Ready to play? Choose your difficulty, open your first chest, and start your journey to idle fortune!**
+## 🏆 Végjáték
+
+Miután elsajátítottad az alapokat, tűzz ki csillagokat célul:
+- **Magas pontszám:** Maximalizáld a teljes vagyonodat, mielőtt a rács megtelik.
+- **Speedrun:** Szerezz minél több pénzt Nehéz nehézségen 10 percen belül.
+- **Tökéletes rács:** Miután feltöltötted a rácsot, próbáld meg az összes alakzatot eltüntetni, hogy üres maradjon a rács.
+
+---
+
+## 🙌 Befejező gondolatok
+
+Az Idle Tetris a **türelem, a precizitás és egy csipetnyi szerencse** játéka. Minden egyes láda, amit kinyitsz, minden darab, amit elhelyezel, és minden sor, amit eltüntetsz, közelebb visz ahhoz, hogy igazi Tetris-királlyá válj. A rács a vásznad – fesd meg bölcsen.
+
+> *"A legjobb játékosok nemcsak reagálnak – felkészülnek."*
+
+Most pedig indulj, helyezd el a blokkjaidat, és legyen a véletlenszám-generátor mindig a javadra.
+
+---
+
+**🎮 Készen állsz a játékra? Válassz nehézségi szintet, nyisd ki az első ládádat, és kezd el az utadat az inaktív vagyon felé!**
