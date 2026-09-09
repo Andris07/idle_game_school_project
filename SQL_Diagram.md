@@ -14,8 +14,6 @@ erDiagram
     GAME_SESSION ||--o{ PLACEMENT : records
     SHAPE ||--o{ PLACEMENT : uses
 
-    GAME_SESSION ||--o{ LINE_COMPLETION : records
-
     SHAPE ||--o{ CHEST_REWARD : awards
 
     GAME_SESSION ||--o{ GAME_EVENT : activates
