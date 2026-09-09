@@ -1,5 +1,7 @@
 # 🧩 Idle Tetris – Projekt Dokumentáció és Bemutatkozás
 
+> ##### [Figma](https://www.figma.com/design/gp6s0Oq4OFfM2OxtJQvokr/idle_game_school_project_design_concept?node-id=0-1&t=FuzkFyeomJ9LTVlS-1)
+
 ---
 
 ## 📋 Tartalomjegyzék
