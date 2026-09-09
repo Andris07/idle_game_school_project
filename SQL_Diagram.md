@@ -19,9 +19,6 @@ erDiagram
 
     GAME_SESSION ||--o{ LINE_COMPLETION : records
 
-    GAME_SESSION ||--o{ CHEST : owns
-    CHEST_TYPE ||--o{ CHEST : classifies
-    CHEST ||--o{ CHEST_REWARD : contains
     REWARD_TYPE ||--o{ CHEST_REWARD : defines
     SHAPE ||--o{ CHEST_REWARD : awards
 
@@ -48,26 +45,6 @@ erDiagram
         DATETIME started_at
         DATETIME ended_at
         DATETIME updated_at
-    }
-
-    PRESET {
-        BIGINT id PK
-        BIGINT game_session_id FK
-        VARCHAR difficulty
-        DATETIME created_at
-    }
-
-    BUFF_TYPE {
-        BIGINT id PK
-        VARCHAR code
-        VARCHAR name
-    }
-
-    PRESET_BUFF {
-        BIGINT id PK
-        BIGINT preset_id FK
-        BIGINT buff_type_id FK
-        DECIMAL value
     }
 
     SHAPE {
@@ -109,37 +86,6 @@ erDiagram
         DATETIME placed_at
     }
 
-    LINE_COMPLETION {
-        BIGINT id PK
-        BIGINT game_session_id FK
-        VARCHAR line_type
-        INT line_index
-        DECIMAL bonus_multiplier
-        DECIMAL bonus_amount
-        DATETIME completed_at
-    }
-
-    CHEST_TYPE {
-        BIGINT id PK
-        VARCHAR code
-        VARCHAR name
-    }
-
-    CHEST {
-        BIGINT id PK
-        BIGINT game_session_id FK
-        BIGINT chest_type_id FK
-        VARCHAR status
-        DATETIME acquired_at
-        DATETIME opened_at
-    }
-
-    REWARD_TYPE {
-        BIGINT id PK
-        VARCHAR code
-        VARCHAR name
-    }
-
     CHEST_REWARD {
         BIGINT id PK
         BIGINT chest_id FK
@@ -165,13 +111,4 @@ erDiagram
         DATETIME expires_at
     }
 
-    GAME_STATISTICS {
-        BIGINT id PK
-        BIGINT game_session_id FK
-        DECIMAL total_income
-        DECIMAL highest_combo
-        INT elapsed_seconds
-        INT completed_lines
-        INT placed_shapes
-    }
 ```
