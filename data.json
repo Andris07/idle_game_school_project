@@ -1,0 +1,26 @@
+{
+    "preset":{
+            "difficulty":"hard",
+            "buffs":{
+                "ival":"",
+                "oval":"",
+                "sval":"",
+                "zval":"",
+                "lval":"",
+                "jval":"",
+                "tval":""
+            }
+    },
+    "inventory":{
+        "shapename":{
+            "value":"",
+            "xcrod":"",
+            "ycord":""
+        },
+        "shapename2":{
+            "value":"",
+            "xcrod":"",
+            "ycord":""
+        }
+    }
+}
