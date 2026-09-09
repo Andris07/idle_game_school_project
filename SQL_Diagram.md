@@ -13,6 +13,7 @@ erDiagram
 
     GAME_SESSION ||--o{ PLACEMENT : records
     SHAPE ||--o{ PLACEMENT : uses
+    PLACEMENT ||--o{ BOARD_CELL : uses
 
     GAME_SESSION ||--o{ GAME_EVENT : activates
     EVENT_TYPE ||--o{ GAME_EVENT : classifies
@@ -53,8 +54,7 @@ erDiagram
     PLACEMENT {
         INT id PK
         INT shape_id FK
-        INT x_coord
-        INT y_coord
+        INT board_id FK
     }
 
     EVENT_TYPE {
