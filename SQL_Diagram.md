@@ -4,9 +4,6 @@
 erDiagram
 
     DIFFICULTY ||--o{ GAME_SESSION : has
-    GAME_SESSION ||--|| PRESET : uses
-    PRESET ||--o{ PRESET_BUFF : contains
-    BUFF_TYPE ||--o{ PRESET_BUFF : defines
 
     GAME_SESSION ||--o{ INVENTORY_ITEM : contains
     SHAPE ||--o{ INVENTORY_ITEM : stored_as
@@ -19,13 +16,11 @@ erDiagram
 
     GAME_SESSION ||--o{ LINE_COMPLETION : records
 
-    REWARD_TYPE ||--o{ CHEST_REWARD : defines
     SHAPE ||--o{ CHEST_REWARD : awards
 
     GAME_SESSION ||--o{ GAME_EVENT : activates
     EVENT_TYPE ||--o{ GAME_EVENT : classifies
 
-    GAME_SESSION ||--|| GAME_STATISTICS : has
 
     DIFFICULTY {
         BIGINT id PK
