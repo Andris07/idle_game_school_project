@@ -41,7 +41,7 @@ Minden egyes elhelyezett alakzat **passzív jövedelmet** termel az idő múlás
 ---
 
 ### 🧩 Sor- és oszlopkiegészítés – Az igazi pénzkereső
-Itt válik az Idle Tetris a passzív gyűjtögetésből **kombóvadász adrenalinlöketgé**.
+Itt válik az Idle Tetris a passzív gyűjtögetésből **kombóvadász adrenalinlöketé**.
 
 - Amikor **kitöltesz egy teljes sort** (az összes cella megtelt), a játék kiszámolja **az adott sorban lévő összes alakzat összértékét**, és megszorozza azon alakzatok számával, amelyek hozzájárultak a sorhoz.
 - Ugyanez vonatkozik az **oszlopokra** – egy teljes oszlop hasonló jutalomszámítást indít el.
@@ -88,9 +88,9 @@ Ez a láda egy **ideiglenes globális eseményt** indít el, amely hatással van
 | Esemény neve | Hatás | Időtartam |
 |------------|--------|----------|
 | 💰 **Aranyláz** | Minden passzív jövedelem megszorzódik 2x-el | 5 perc |
-| 🌀 **Dupla alakzat** | Minden kinyitott alakzat egy azonos másolatot generál a készletedben | 5 perc |
-| ⏳ **Időbefagyasztás** | A rács leáll, nem kombinálódnak a sorok/oszlopok, nyomás nélkül helyezhetsz el alakzatokat hatalmas profitért | 20 másodperc |
-| 📈 **Értékrobbanás** | Az összes sor-/oszlopkiegészítési jutalom 50%-kal nő | 5 perc |
+| 🌀 **Dupla alakzat** | Minden kinyitott alakzat egy azonos másolatot generál a készletedben | 1 perc |
+| ⏳ **Időbefagyasztás** | A rács leáll, nem kombinálódnak a sorok/oszlopok, nyomás nélkül helyezhetsz el alakzatokat hatalmas profitért | 30 másodperc |
+| 📈 **Értékrobbanás** | Az összes sor-/oszlopkiegészítési jutalom 50%-kal nő | 3 perc |
 
 - **Stratégia:** Időzítsd jól az eseményládák nyitását – egy Aranyláz aktiválása egy nagy sor-/oszlopkombó előtt csillagászati hozamokat eredményezhet.
 
