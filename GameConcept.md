@@ -3,15 +3,18 @@
 ---
 
 ## 📋 Tartalomjegyzék
-1. [Projekt áttekintése](#projekt-áttekintése)
-2. [A weboldal képességei és funkciói](#a-weboldal-képességei-és-funkciói)
-3. [Konkrét célok a projekt végére](#konkrét-célok-a-projekt-végére)
-4. [Összehasonlítás más hasonló játékokkal](#összehasonlítás-más-hasonló-játékokkal)
-5. [Célcsoport és korosztályos ajánlás](#célcsoport-és-korosztályos-ajánlás)
-6. [Miért érdemes ezt a játékot választani?](#miért-érdemes-ezt-a-játékot-választani)
-7. [Jövőbeli fejlesztési tervek](#jövőbeli-fejlesztési-tervek)
+
+1. [Projekt áttekintése](#projekt-attekintese)
+2. [Konkrét célok a projekt végére](#konkret-celok-a-projekt-vegere)
+3. [Összehasonlítás más hasonló játékokkal](#osszehasonlitas-mas-hasonlo-jatekokkal)
+4. [Miért jobb ez a weboldal, mint az ehhez hasonlók?](#miert-jobb-ez-a-weboldal-mint-az-ehhez-hasonlok)
+5. [Kiknek, milyen korosztályban ajánlott?](#kiknek-milyen-korosztalyban-ajanlott)
+6. [Miért érdemes ezt a játékot választani?](#miert-erdemes-ezt-a-jatekot-valasztani)
+7. [Összegzés](#osszegzes)
 
 ---
+
+<a id="projekt-attekintese"></a>
 
 ## 1. Projekt áttekintése
 
@@ -40,6 +43,8 @@ A weboldal egy **teljes értékű, interaktív játékalkalmazás**, amely a kö
 
 ---
 
+<a id="konkret-celok-a-projekt-vegere"></a>
+
 ## 2. Konkrét célok a projekt végére
 
 A projekt fejlesztése során az alábbi **konkrét, mérhető célokat** tűztük ki magunk elé:
@@ -62,6 +67,8 @@ A projekt fejlesztése során az alábbi **konkrét, mérhető célokat** tűzt�
 
 ---
 
+<a id="osszehasonlitas-mas-hasonlo-jatekokkal"></a>
+
 ## 3. Összehasonlítás más hasonló játékokkal
 
 | Szempont | **Idle Tetris** | Klasszikus Tetris | Hagyományos Idle játékok |
@@ -75,6 +82,8 @@ A projekt fejlesztése során az alábbi **konkrét, mérhető célokat** tűzt�
 | **Tanulási görbe** | Enyhe – könnyű kezdeni, de nehéz mesterré válni | Meredek – azonnali reflexek | Nagyon alacsony |
 
 ---
+
+<a id="miert-jobb-ez-a-weboldal-mint-az-ehhez-hasonlok"></a>
 
 ## 4. Miért jobb ez a weboldal, mint az ehhez hasonlók?
 
@@ -94,6 +103,8 @@ A három nehézségi szint lehetővé teszi, hogy **mindenki megtalálja a szám
 Mivel a játék **teljesen böngésző alapú**, bárki, bármikor, bármilyen eszközről azonnal játszhat – regisztráció, telepítés vagy fizetés nélkül.
 
 ---
+
+<a id="kiknek-milyen-korosztalyban-ajanlott"></a>
 
 ## 5. Kiknek, milyen korosztályban ajánlott?
 
@@ -119,6 +130,8 @@ A játék különösen ajánlott azoknak, akik:
 
 ---
 
+<a id="miert-erdemes-ezt-a-jatekot-valasztani"></a>
+
 ## 6. Miért érdemes ezt a játékot választani?
 
 ### 🏆 **Előnyök más játékokkal szemben**
@@ -140,6 +153,8 @@ A játék különösen ajánlott azoknak, akik:
 
 ---
 
-## 📎 Összegzés
+<a id="osszegzes"></a>
+
+## 7. Összegzés
 
 Az **Idle Tetris** nem csupán egy újabb Tetris klón vagy idle játék – ez egy **gondosan megtervezett hibrid élmény**, amely egyszerre szórakoztat, kihívást nyújt és fejleszti a stratégiai gondolkodást. A projekt célja, hogy egy **ingyenes, hozzáférhető és mély játékélményt** nyújtson minden korosztály számára, miközben folyamatosan fejlődik és alkalmazkodik a felhasználói igényekhez.
