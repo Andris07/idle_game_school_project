@@ -30,12 +30,12 @@ A weboldal egy **teljes értékű, interaktív játékalkalmazás**, amely a kö
 | Funkció | Leírás |
 |---------|--------|
 | 🎮 **Játékmenet** | Valós idejű tetris elemek elhelyezése egy dinamikus rácson |
-| 📊 **Nehézségi szintek** | Három nehézségi fokozat (Easy, Normal, Hard), eltérő táblaméretekkel |
+| 📊 **Nehézségi szintek** | Három nehézségi fokozat (Könnyű, Normál, Nehéz), eltérő táblaméretekkel |
 | 💰 **Passzív jövedelem** | Minden elhelyezett elem automatikusan bevételt termel |
 | 🧩 **Sor/oszlop teljesítés** | Teljes sorok vagy oszlopok különleges bónuszokat aktiválnak, amelyek exponenciálisan növekedhetnek |
 | 🎁 **Láda rendszer** | Háromféle láda (alakzat, fejlesztés, esemény) véletlenszerű tartalommal |
 | 📦 **Raktárkészlet** | Az összes megszerzett alakzat tárolása és kezelése, csak 8 férőhely |
-| ⏳ **Időzített események** | 5 perces vagy 20 másodperces időkorlátos bónuszok |
+| ⏳ **Időzített események** | Percekben és másodpercekben mért időkorlátos bónuszok |
 | 📱 **Reszponzív dizájn** | Asztali és mobil eszközökön is teljes mértékben működőképes |
 
 ---
@@ -67,12 +67,12 @@ A projekt fejlesztése során az alábbi **konkrét, mérhető célokat** tűzt�
 | Szempont | **Idle Tetris** | Klasszikus Tetris | Hagyományos Idle játékok |
 |----------|----------------|-------------------|--------------------------|
 | **Játékmechanika** | Tetris elhelyezés + idle jövedelem + ládák | Csak elhelyezés és sorok törlése | Csak kattintás és várakozás |
-| **Stratégiai mélység** | 🔥 Magas – minden döntés számít | Közepes – gyors reakciók | Alacsony – főleg várakozás |
-| **Szerencse faktor** | 🎲 Kiegyensúlyozott – ládák véletlen tartalommal | Nincs | Magas/Nincs – véletlenszerű/Fix jutalmak |
-| **Újrajátszhatóság** | 🌟 Kiváló – minden játék más | Jó – de ugyanaz a minta ismétlődik | Gyenge – unalmassá válik |
+| **Stratégiai mélység** | Magas – minden döntés számít | Közepes – gyors reakciók | Alacsony – főleg várakozás |
+| **Szerencse faktor** | Kiegyensúlyozott – ládák véletlen tartalommal | Nincs | Magas/Nincs – véletlenszerű/fix jutalmak |
+| **Újrajátszhatóság** | Kiváló – minden játék más | Jó – de ugyanaz a minta ismétlődik | Gyenge – unalmassá válik |
 | **Grafikai megjelenés** | Modern, letisztult, vizuálisan vonzó | Klasszikus, pixel art | Változó, gyakran egyszerű |
-| **Platform támogatás** | 💻📱 Teljesen reszponzív (böngésző) | Főleg asztali | Főleg mobilos alkalmazások |
-| **Tanulási görbe** | 📈 Enyhe – könnyű kezdeni, de nehéz mesterré válni | Meredek – azonnali reflexek | Nagyon alacsony |
+| **Platform támogatás** | Teljesen reszponzív (böngésző) | Főleg asztali | Főleg mobilos alkalmazások |
+| **Tanulási görbe** | Enyhe – könnyű kezdeni, de nehéz mesterré válni | Meredek – azonnali reflexek | Nagyon alacsony |
 
 ---
 
@@ -86,9 +86,9 @@ Míg más játékokban a szerencse dominál, itt a **játékos döntései** – 
 
 ### ✅ **Skálázható nehézség**
 A három nehézségi szint lehetővé teszi, hogy **mindenki megtalálja a számára ideális kihívást**:
-- Kezdők számára az Easy mód tökéletes a mechanikák elsajátítására.
-- Haladó játékosok számára a Normal mód kiegyensúlyozott élményt nyújt.
-- A Hard mód pedig **igazi próbatétel** a legelkötelezettebb játékosok számára.
+- Kezdők számára a Könnyű szint tökéletes a mechanikák elsajátítására.
+- Haladó játékosok számára a Normál szint kiegyensúlyozott élményt nyújt.
+- A Nehéz szint pedig **igazi próbatétel** a legelkötelezettebb játékosok számára.
 
 ### ✅ **Nincs szükség letöltésre**
 Mivel a játék **teljesen böngésző alapú**, bárki, bármikor, bármilyen eszközről azonnal játszhat – regisztráció, telepítés vagy fizetés nélkül.
@@ -97,7 +97,7 @@ Mivel a játék **teljesen böngésző alapú**, bárki, bármikor, bármilyen e
 
 ## 5. Kiknek, milyen korosztályban ajánlott?
 
-### 🎯 **Fókusz célcsoport: 16–35 év közötti fiatal felnőttek**
+### 🎯 **Fókusz célcsoport: 16–25 év közötti fiatal felnőttek**
 
 Bár a játék **alapvetően mindenki számára elérhető és élvezhető**, a következő demográfiai csoportok számára különösen ajánlott:
 
