@@ -1,0 +1,13 @@
+{
+    "difficulty":{
+        "id":0,
+        "name":"",
+        "grid_size":0
+    },
+    "game_session":{
+        "id":0,
+        "difficulty_id":0,
+        "money":0.0,
+        "last_save_at":""
+    }
+}
