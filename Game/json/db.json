@@ -50,5 +50,49 @@
         "effect_value":0.0,
         "started_at":"",
         "expires_at":""
-    }
+    },
+    "SHAPE":[
+        {
+            "id":0,
+            "name":"i",
+            "base_value":0.0
+        },
+        {
+            "id":1,
+            "name":"o",
+            "base_value":0.0
+        },
+        {
+            "id":2,
+            "name":"t",
+            "base_value":0.0
+        },
+        {
+            "id":3,
+            "name":"s",
+            "base_value":0.0
+        },
+        {
+            "id":4,
+            "name":"z",
+            "base_value":0.0
+        },
+        {
+            "id":5,
+            "name":"j",
+            "base_value":0.0
+        },
+        {
+            "id":6,
+            "name":"l",
+            "base_value":0.0
+        }
+    ],
+    "INVENTORY_ITEM":[
+        {
+            "id":0,
+            "shape_id":0,
+            "value":0
+        }
+    ]
 }
