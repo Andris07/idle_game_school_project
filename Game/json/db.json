@@ -1,13 +1,25 @@
 {
-    "difficulty":{
+    "DIFFICULTY":{
         "id":0,
         "name":"",
         "grid_size":0
     },
-    "game_session":{
+    "GAME_SESSION":{
         "id":0,
         "difficulty_id":0,
         "money":0.0,
         "last_save_at":""
+    },
+    "EVENT_TYPE":{
+        "id":0,
+        "name":"",
+        "duration_seconds":0
+    },
+    "GAME_EVENT":{
+        "id":0,
+        "event_type_id":0,
+        "effect_value":0.0,
+        "started_at":"",
+        "expires_at":""
     }
 }
