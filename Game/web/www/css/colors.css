@@ -6,4 +6,38 @@
     --navy-blue: #000020;
     --warm-pink: #EE4266;
     --orange: #FF9100;
+
+    /* Theme Colors */
+    --background: var(--black);
+    --surface: var(--navy-blue);
+
+    --text: var(--white);
+    --text-inverse: var(--black);
+
+    --primary: var(--white);
+    --primary-text: var(--navy-blue);
+
+    --accent: var(--warm-pink);
+    --accent-text: var(--white);
+
+    --secondary: var(--orange);
+    --secondary-text: var(--black);
+}
+
+[data-theme="light"]
+{
+    --background: var(--white);
+    --surface: var(--navy-blue);
+
+    --text: var(--black);
+    --text-inverse: var(--white);
+
+    --primary: var(--navy-blue);
+    --primary-text: var(--white);
+
+    --accent: var(--warm-pink);
+    --accent-text: var(--white);
+
+    --secondary: var(--orange);
+    --secondary-text: var(--black);
 }
