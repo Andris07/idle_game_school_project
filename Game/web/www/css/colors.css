@@ -9,7 +9,10 @@
 
     /* Theme Colors */
     --background: var(--black);
+    --background-text: var(--white);
+
     --surface: var(--navy-blue);
+    --surface-text: var(--white);
 
     --text: var(--white);
     --text-inverse: var(--black);
@@ -21,13 +24,16 @@
     --accent-text: var(--white);
 
     --secondary: var(--orange);
-    --secondary-text: var(--black);
+    --secondary-text: var(--white);
 }
 
 [data-theme="light"]
 {
     --background: var(--white);
+    --background-text: var(--black);
+
     --surface: var(--navy-blue);
+    --surface-text: var(--white);
 
     --text: var(--black);
     --text-inverse: var(--white);
@@ -39,5 +45,5 @@
     --accent-text: var(--white);
 
     --secondary: var(--orange);
-    --secondary-text: var(--black);
+    --secondary-text: var(--white);
 }
