@@ -1,18 +1,17 @@
-.container
-{
+.container{
     display: flex;
     flex-wrap: wrap;
     padding: 20px;
     gap: 2px;
     justify-content: center;
+    background-color: bisque;
     height: 90vh;
     width: 90vw;
     justify-self: center;
     min-height: fit-content;
 }
-
-.itemcont
-{
+.itemcont{
+    background-color: aquamarine;
     height: 90%;
     width: 49%;
     padding: 1px;
@@ -24,12 +23,11 @@
     flex-grow: 1;
 }
 
-.item
-{
+.item{
+    background-color: rgb(141, 194, 155);
     width: 100%;
 }
 
-<<<<<<< Updated upstream
 .chest-img{
     flex: 3;
     background-color: burlywood;
@@ -46,10 +44,6 @@
 }
 
 .chest{
-=======
-.chest
-{
->>>>>>> Stashed changes
     display:flex;
     gap: 3px;
     flex-direction: column;
@@ -57,42 +51,17 @@
     height: 100%;
 }
 
-.chest-img
-{
-    flex: 3;
-    height: 100%;
-    width: 100%;
-}
-
-.chest-button
-{
-    flex: 1;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-}
-
-.chest-img
-{
-    flex: 3;
-    height: 100%;
-    width: 100%;
-}
-
-.chest-button
-{
-    flex: 1;
-}
-
-#chests
-{
+#chestrow{
     flex:1;
     display: flex;
     gap: 3px;
     justify-content: space-between;
 }
 
-#inv
-{
+#inv{
     flex:2;
+}
+
+#playgrid{
+    background-color: grey;
 }
