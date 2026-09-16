@@ -4,6 +4,7 @@
     --black: #1E1E1E;
     --white: #FFFFFF;
     --navy-blue: #000020;
+    --navy-blue-light: #191936;
     --warm-pink: #EE4266;
     --orange: #FF9100;
 
@@ -13,6 +14,9 @@
 
     --surface: var(--navy-blue);
     --surface-text: var(--white);
+
+    --itemcont: var(--navy-blue-light);
+    --itemcont-text: var(--white);
 
     --text: var(--white);
     --text-inverse: var(--black);
@@ -34,6 +38,9 @@
 
     --surface: var(--navy-blue);
     --surface-text: var(--white);
+
+    --itemcont: var(--navy-blue-light);
+    --itemcont-text: var(--white);
 
     --text: var(--black);
     --text-inverse: var(--white);
