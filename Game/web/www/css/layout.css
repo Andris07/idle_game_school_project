@@ -38,6 +38,9 @@
 .chest-button{
     flex: 1;
     background-color: burlywood;
+    display: flex;
+    justify-content: center;
+    align-items: center;
 }
 
 .chest{

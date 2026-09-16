@@ -1,0 +1,11 @@
+.buy-button{
+    color: var(--white);
+    background-color: var(--orange);
+    height: 70%;
+    width: 70%;
+    justify-self: center;
+    align-self: center;
+    border: 0px;
+    border-radius: 5px;
+    font-weight: bold;
+}
