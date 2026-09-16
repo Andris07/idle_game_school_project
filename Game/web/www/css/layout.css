@@ -46,22 +46,22 @@
 
 .chest
 {
-    display:flex;
+    display: flex;
     gap: 3px;
     flex-direction: column;
     width: 33%;
     height: 100%;
 }
 
-#chestrow
+#chests
 {
-    flex:1;
+    flex: 1;
     display: flex;
     gap: 3px;
     justify-content: space-between;
 }
 
-#inv
+#inventory
 {
-    flex:2;
+    flex: 2;
 }
