@@ -1,6 +1,6 @@
-const button = document.getElementById("theme-toggle");
+const themeToggleButton = document.getElementById("theme-toggle");
 
-button.addEventListener("click", () =>
+themeToggleButton.addEventListener("click", () =>
 {
     const currentTheme = document.body.dataset.theme;
 
