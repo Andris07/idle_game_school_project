@@ -49,6 +49,7 @@
     flex:1;
     display: flex;
     gap: 3px;
+    justify-content: space-between;
 }
 
 #inv{
