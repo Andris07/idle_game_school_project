@@ -99,16 +99,19 @@ footer
 {
     justify-self: center;
     align-self: bottom;
-    padding-top: 25px;
+    padding-bottom: 10px;
     text-align: center;
     font-size: 12px;
+    font-style: italic;
     font-family: Arial, sans-serif;
+    text-shadow: 0px 0px 3px var(--background-text);
 }
 
 footer a
 {
     text-decoration: none;
     font-style: italic;
-    font-weight: bold;
-    color: var(--background-text);
+    font-family: "Arial Black", sans-serif;
+    color: var(--accent);
+    text-shadow: 0px 0px 3px var(--accent);
 }
