@@ -87,3 +87,21 @@
     gap: 3px;
     justify-content: space-between;
 }
+
+footer
+{
+    justify-self: center;
+    align-self: bottom;
+    padding-top: 25px;
+    text-align: center;
+    font-size: 12px;
+    font-family: Arial, sans-serif;
+}
+
+footer a
+{
+    text-decoration: none;
+    font-style: italic;
+    font-weight: bold;
+    color: var(--background-text);
+}
