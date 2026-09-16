@@ -1,13 +1,20 @@
+body
+{
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
+}
+
 .container
 {
     display: flex;
     flex-wrap: wrap;
     padding: 20px;
-    gap: 2px;
+    gap: 0;
     justify-content: center;
     height: 90vh;
     width: 90vw;
-    justify-self: center;
+    margin: auto;
     min-height: fit-content;
 }
 
