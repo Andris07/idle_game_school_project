@@ -29,28 +29,36 @@
     width: 100%;
 }
 
-.chest-img
+.chest
 {
-    flex: 3;
+    display: flex;
+    flex-direction: column;
+    width: 33%;
     height: 100%;
-    width: 100%;
 }
 
-.chest-button
+.chest-img
 {
-    flex: 1;
+    height: 75%;
     display: flex;
     justify-content: center;
     align-items: center;
 }
 
-.chest
+.chest-button
 {
+    height: 25%;
     display: flex;
-    gap: 3px;
-    flex-direction: column;
-    width: 33%;
-    height: 100%;
+    justify-content: center;
+    align-items: center;
+}
+
+.chest-img img
+{
+    display: block;
+    max-width: 100%;
+    max-height: 100%;
+    object-fit: contain;
 }
 
 #chests
