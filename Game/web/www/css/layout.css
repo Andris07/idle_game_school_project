@@ -1,17 +1,18 @@
-.container{
+.container
+{
     display: flex;
     flex-wrap: wrap;
     padding: 20px;
     gap: 2px;
     justify-content: center;
-    background-color: bisque;
     height: 90vh;
     width: 90vw;
     justify-self: center;
     min-height: fit-content;
 }
-.itemcont{
-    background-color: aquamarine;
+
+.itemcont
+{
     height: 90%;
     width: 49%;
     padding: 1px;
@@ -23,27 +24,28 @@
     flex-grow: 1;
 }
 
-.item{
-    background-color: rgb(141, 194, 155);
+.item
+{
     width: 100%;
 }
 
-.chest-img{
+.chest-img
+{
     flex: 3;
-    background-color: burlywood;
     height: 100%;
     width: 100%;
 }
 
-.chest-button{
+.chest-button
+{
     flex: 1;
-    background-color: burlywood;
     display: flex;
     justify-content: center;
     align-items: center;
 }
 
-.chest{
+.chest
+{
     display:flex;
     gap: 3px;
     flex-direction: column;
@@ -51,17 +53,15 @@
     height: 100%;
 }
 
-#chestrow{
+#chestrow
+{
     flex:1;
     display: flex;
     gap: 3px;
     justify-content: space-between;
 }
 
-#inv{
+#inv
+{
     flex:2;
-}
-
-#playgrid{
-    background-color: grey;
 }

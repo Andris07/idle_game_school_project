@@ -1,4 +1,5 @@
-.buy-button{
+.buy-button
+{
     color: var(--white);
     background-color: var(--orange);
     height: 70%;
