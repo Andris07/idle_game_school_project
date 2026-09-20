@@ -14,6 +14,45 @@
 </head>
 
 <body data-theme="dark">
+    <nav class="menu">
+        <!-- LEFT: Project repository -->
+        <div class="menu-section menu-repository">
+            <a class="repository-link" href="https://github.com/Andris07/idle_game_school_project" target="_blank">
+                <span class="repo-icon">Project Repository</span>
+            </a>
+        </div>
+
+        <!-- CENTER: Game information -->
+        <div class="menu-section menu-info">
+            <!--
+                Placeholder for future information.
+                Examples:
+                - QTE type
+                - QTE timer
+                - money
+            -->
+
+            <div class="game-info">
+                <span id="game-timer" class="game-info-item">
+                    --:--
+                </span>
+
+                <span class="game-info-separator">|</span>
+
+                <span id="player-money" class="game-info-item">
+                    $$$
+                </span>
+            </div>
+        </div>
+
+        <!-- RIGHT: Theme toggle -->
+        <div class="menu-section menu-theme">
+            <button id="theme-toggle" class="theme-toggle" type="button">
+                <span class="theme-icon"></span>
+            </button>
+        </div>
+    </nav>
+
     <main class="container">
         <div id="shopgrid" class="itemcont">
             <div id="chests" class="item">
