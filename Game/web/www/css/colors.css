@@ -5,8 +5,14 @@
     --white: #FFFFFF;
     --navy-blue: #000020;
     --navy-blue-light: #191936;
+    --baby-blue: #ADD7F6;
+    --baby-blue-light: #BBDEFB;
     --warm-pink: #EE4266;
+    --warm-purple: #7371fc;
     --orange: #FF9100;
+
+    --filter-accent: brightness(0) saturate(100%) invert(48%) sepia(89%) saturate(747%) hue-rotate(1deg) brightness(103%) contrast(101%);
+    --filter-secondary: brightness(0) saturate(100%) invert(62%) sepia(96%) saturate(2470%) hue-rotate(1deg) brightness(101%) contrast(101%);
 
     /* Theme Colors */
     --background: var(--black);
@@ -36,19 +42,19 @@
     --background: var(--white);
     --background-text: var(--black);
 
-    --surface: var(--navy-blue);
+    --surface: var(--baby-blue);
     --surface-text: var(--white);
 
-    --itemcont: var(--navy-blue-light);
+    --itemcont: var(--baby-blue-light);
     --itemcont-text: var(--white);
 
     --text: var(--black);
     --text-inverse: var(--white);
 
-    --primary: var(--navy-blue);
+    --primary: var(--baby-blue);
     --primary-text: var(--white);
 
-    --accent: var(--warm-pink);
+    --accent: var(--warm-purple);
     --accent-text: var(--white);
 
     --secondary: var(--orange);
