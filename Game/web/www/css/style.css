@@ -35,16 +35,6 @@ body
     border-radius: 0px 20px 20px 0px;
 }
 
-.item
-{
-
-}
-
-#chests
-{
-
-}
-
 .chest-img img
 {
     max-height: 100%;
@@ -64,7 +54,8 @@ body
     font-weight: bold;
 }
 
-footer{
+footer
+{
     padding-bottom: 10px;
     text-align: center;
     font-size: 12px;
@@ -80,4 +71,106 @@ footer a
     font-family: "Arial Black", sans-serif;
     color: var(--accent);
     text-shadow: 0px 0px 3px var(--accent);
+}
+
+.menu
+{
+    background-color: var(--surface);
+    color: var(--surface-text);
+    border: 3px solid var(--accent);
+    border-radius: 20px;
+}
+
+.repository-link
+{
+    color: var(--accent);
+
+    font-family: "Arial Black", Arial, sans-serif;
+    font-size: 14px;
+
+    text-decoration: none;
+
+    transition:
+        color 0.2s ease,
+        transform 0.2s ease;
+}
+
+.repository-link:hover
+{
+    color: var(--orange);
+
+    transform: translateX(4px);
+}
+
+
+.repository-link:active
+{
+    transform: translateX(2px) scale(0.98);
+}
+
+.game-info-item
+{
+    font-family: "Arial Black", Arial, sans-serif;
+    font-size: 14px;
+    color: var(--text);
+}
+
+.game-info-separator
+{
+    color: var(--accent);
+    font-weight: bold;
+}
+
+.theme-icon
+{
+    background-color: var(--text);
+    mask-repeat: no-repeat;
+    mask-position: center;
+    mask-size: contain;
+    -webkit-mask-repeat: no-repeat;
+    -webkit-mask-position: center;
+    -webkit-mask-size: contain;
+    transition: background-color 0.3s ease, transform 0.35s ease;
+}
+
+body[data-theme="dark"] .theme-icon
+{
+    mask-image: url("../src/lamp_off.svg");
+    -webkit-mask-image: url("../src/lamp_off.svg");
+    background-color: var(--text);
+    transform: rotate(0deg);
+}
+
+body[data-theme="light"] .theme-icon
+{
+    mask-image: url("../src/lamp_on.svg");
+    -webkit-mask-image: url("../src/lamp_on.svg");
+    background-color: var(--accent);
+    transform: rotate(180deg);
+}
+
+.theme-toggle
+{
+    border: 2px solid var(--accent);
+    border-radius: 50%;
+    background-color: transparent;
+    cursor: pointer;
+    transition: background-color 0.25s ease, border-color 0.25s ease, transform 0.25s ease, box-shadow 0.25s ease;
+}
+
+.theme-toggle:hover
+{
+    transform: scale(1.1);
+    box-shadow: 0 0 8px var(--accent), 0 0 16px var(--accent);
+}
+
+.theme-toggle:active
+{
+    transform: scale(0.9);
+}
+
+.theme-toggle:focus-visible
+{
+    outline: 2px solid var(--orange);
+    outline-offset: 3px;
 }
