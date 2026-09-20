@@ -98,5 +98,42 @@ footer
 {
     justify-self: center;
     align-self: bottom;
+    margin-top: 10px;
 }
 
+.menu
+{
+    width: 90vw;
+    min-height: 50px;
+    margin: 10px auto;
+
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    justify-self: center;
+    align-self: top;
+    align-items: center;
+}
+
+.menu-section
+{
+    height: 100%;
+    padding: 10px 20px;
+
+    display: flex;
+    align-items: center;
+}
+
+.menu-repository
+{
+    justify-content: flex-start;
+}
+
+.menu-info
+{
+    justify-content: center;
+}
+
+.menu-theme
+{
+    justify-content: flex-end;
+}
