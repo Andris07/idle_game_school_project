@@ -9,3 +9,15 @@ export async function fetchDb(dbName) {
     });
     return await fetchDb.json();
 }
+
+export async function postDb(dbName, data) {
+    const postDb = await fetch(`${BASE_URL}/${dbName}`,{
+        method: "POST",
+        headers: {
+            Accept: "application/json",
+            "Content-Type": "application/json"
+        },
+        body: JSON.stringify(data)
+    });
+    return await postDb.json();
+}
