@@ -1,18 +1,36 @@
-import { fetchDb } from "./data.js";
+import { fetchDb, postDb } from "./data.js";
 
 let tetrisShapes = [];
+let nextInventoryId = 0;
 const inventoryElement = document.querySelector("#inventory");
 const inventory = [];
 const shapeChestButton = document.querySelector("#shape-chest-button");
 const maxInventoryItems = 8;
 
-fetchDb("SHAPE")
-	.then((data) => {
-		tetrisShapes = data;
-		shapeChestButton.disabled = false;
+async function refreshInventory() {
+	const items = await fetchDb("INVENTORY_ITEM");
+	nextInventoryId = items.reduce(
+		(maxId, item) => Math.max(maxId, Number(item.id) || 0),
+		-1
+	) + 1;
+
+	const shapesInInventory = items
+		.map((item) => tetrisShapes.find(
+			(shape) => Number(shape.id) === Number(item.shape_id)
+		))
+		.filter(Boolean);
+
+	inventory.splice(0, inventory.length, ...shapesInInventory);
+	fillInventory();
+}
+
+Promise.all([fetchDb("SHAPE"), fetchDb("INVENTORY_ITEM")])
+	.then(([shapes]) => {
+		tetrisShapes = shapes;
+		return refreshInventory();
 	})
 	.catch((error) => {
-		console.error("Could not load shapes:", error);
+		console.error("Could not load inventory:", error);
 	});
 
 function fillInventory() {
@@ -45,9 +63,24 @@ function fillInventory() {
 	});
 }
 
-shapeChestButton.addEventListener("click", () => {
+shapeChestButton.addEventListener("click", async () => {
 	const shape = tetrisShapes[Math.floor(Math.random() * tetrisShapes.length)];
-	inventory.push(shape);
-	fillInventory();
-	shapeChestButton.disabled = inventory.length >= maxInventoryItems;
+	shapeChestButton.disabled = true;
+	if (inventory.length >= maxInventoryItems) {
+		alert("Inventory is full! Please remove an item before adding a new one.");
+		shapeChestButton.disabled = false;
+		return;
+	}
+	try {
+		await postDb("INVENTORY_ITEM", {
+			id: nextInventoryId,
+			shape_id: shape.id,
+			value: shape.base_value
+		});
+		await refreshInventory();
+	} catch (error) {
+		console.error("Could not save inventory item:", error);
+	} finally {
+		shapeChestButton.disabled = inventory.length >= maxInventoryItems;
+	}
 });
