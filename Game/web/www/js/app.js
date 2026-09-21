@@ -16,7 +16,33 @@ fetchDb("SHAPE")
 	});
 
 function fillInventory() {
+	inventoryElement.replaceChildren();
 
+	inventory.forEach((shape) => {
+	const item = document.createElement("div");
+	item.className = "inventory-item";
+	item.setAttribute("aria-label", `${shape.name} shape`);
+
+	const grid = document.createElement("div");
+	grid.className = "shape-grid";
+	const filledCells = new Set(shape.cells.map(([column, row]) => `${column},${row}`));
+
+	for (let row = 0; row < 4; row += 1) {
+		for (let column = 0; column < 4; column += 1) {
+			const cell = document.createElement("div");
+			cell.className = "shape-cell";
+			if (filledCells.has(`${column},${row}`)) {
+				cell.classList.add("shape-cell-filled");
+			}
+			grid.appendChild(cell);
+		}
+	}
+
+	const name = document.createElement("strong");
+	name.textContent = shape.name;
+	item.append(grid, name);
+	inventoryElement.appendChild(item);
+	});
 }
 
 shapeChestButton.addEventListener("click", () => {
