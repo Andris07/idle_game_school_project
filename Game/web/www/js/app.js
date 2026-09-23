@@ -60,8 +60,10 @@ function fillInventory() {
 
 		const name = document.createElement("strong");
 		name.textContent = `${shape.name}`;
+		const value = document.createElement("p");
+		value.textContent = `Value: ${shape.value}`;
 
-		item.append(grid, name);
+		item.append(grid, name, value);
 		inventoryElement.appendChild(item);
 	});
 }
