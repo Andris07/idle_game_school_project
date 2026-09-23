@@ -1,4 +1,4 @@
-import { BASE_URL, fetchDb, postDb, } from "./data.js";
+import { BASE_URL, fetchDb, postDb, putDb, deleteDbById } from "./data.js";
 import { showGridPopup, addNewGameButton } from "./popup.js";
 
 const playgrid = document.querySelector("#playgrid");
@@ -6,33 +6,44 @@ const playgrid = document.querySelector("#playgrid");
 export async function loadGameSession()
 {
     const session = await fetchDb("GAME_SESSION");
-    return session?.grid_size || null;
+
+    if (session == null || session.difficulty_id == null)
+    {
+        return null;
+    }
+
+    const difficulties = await fetchDb("DIFFICULTY");
+    const difficulty = difficulties.find(d => d.id === session.difficulty_id);
+
+    return difficulty?.grid_size || null;
 }
 
-export async function saveGameSession(size)
+export async function saveGameSession(difficulty_id)
 {
-    await postDb("GAME_SESSION", { grid_size: size });
+    await putDb("GAME_SESSION",
+    {
+        id: "0",
+        difficulty_id,
+        money: 0,
+        last_save_at: "",
+    });
 }
 
 export async function clearGameSession()
 {
-    try
+    await putDb("GAME_SESSION",
     {
-        await deleteDb("GAME_SESSION");
-    }
-    catch (e)
-    {
-        console.warn("GAME_SESSION already empty");
-    }
+        id: "0",
+        difficulty_id: null,
+        money: 0,
+        last_save_at: ""
+    });
 
-    try
-    {
-        await deleteDb("INVENTORY_ITEM");
-    }
-    catch (e)
-    {
-        console.warn("INVENTORY_ITEM already empty");
-    }
+    const items = await fetchDb("INVENTORY_ITEM");
+
+    await Promise.all(
+        items.map(item => deleteDbById("INVENTORY_ITEM", item.id))
+    );
 }
 
 export function generatePlayGrid(size)
@@ -66,7 +77,8 @@ export function generatePlayGrid(size)
     if (!size)
     {
         showGridPopup();
-    } else
+    }
+    else
     {
         generatePlayGrid(size);
     }
