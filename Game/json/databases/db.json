@@ -1,60 +1,59 @@
 {
   "DIFFICULTY": [
     {
-      "id": 0,
+      "id": "0",
       "name": "easy",
       "grid_size": 10
     },
     {
-      "id": 1,
+      "id": "1",
       "name": "normal",
       "grid_size": 8
     },
     {
-      "id": 2,
+      "id": "2",
       "name": "hard",
       "grid_size": 6
     }
   ],
   "GAME_SESSION": {
-    "id": 0,
-    "difficulty_id": 0,
+    "id": "0",
+    "difficulty_id": null,
     "money": 0,
-    "last_save_at": "",
-    "grid_size": 6
+    "last_save_at": ""
   },
   "EVENT_TYPE": [
     {
-      "id": 0,
+      "id": "0",
       "name": "gold_rush",
       "duration_seconds": 300
     },
     {
-      "id": 1,
+      "id": "1",
       "name": "double_shape",
       "duration_seconds": 60
     },
     {
-      "id": 2,
+      "id": "2",
       "name": "time_freeze",
       "duration_seconds": 30
     },
     {
-      "id": 3,
+      "id": "3",
       "name": "value_burst",
       "duration_seconds": 180
     }
   ],
   "GAME_EVENT": {
-    "id": 0,
-    "event_type_id": 0,
+    "id": "0",
+    "event_type_id": "0",
     "effect_value": 0,
     "started_at": "",
     "expires_at": ""
   },
   "SHAPE": [
     {
-      "id": 0,
+      "id": "0",
       "name": "i",
       "base_value": 0,
       "cells": [
@@ -77,7 +76,7 @@
       ]
     },
     {
-      "id": 1,
+      "id": "1",
       "name": "o",
       "base_value": 0,
       "cells": [
@@ -100,7 +99,7 @@
       ]
     },
     {
-      "id": 2,
+      "id": "2",
       "name": "t",
       "base_value": 0,
       "cells": [
@@ -123,7 +122,7 @@
       ]
     },
     {
-      "id": 3,
+      "id": "3",
       "name": "s",
       "base_value": 0,
       "cells": [
@@ -146,7 +145,7 @@
       ]
     },
     {
-      "id": 4,
+      "id": "4",
       "name": "z",
       "base_value": 0,
       "cells": [
@@ -169,7 +168,7 @@
       ]
     },
     {
-      "id": 5,
+      "id": "5",
       "name": "j",
       "base_value": 0,
       "cells": [
@@ -192,7 +191,7 @@
       ]
     },
     {
-      "id": 6,
+      "id": "6",
       "name": "l",
       "base_value": 0,
       "cells": [
@@ -215,12 +214,10 @@
       ]
     }
   ],
-  "INVENTORY_ITEM": [
-    
-  ],
+  "INVENTORY_ITEM": [],
   "BOARD_CELL": [
     {
-      "id": 0,
+      "id": "0",
       "x_coord": 0,
       "y_coord": 0,
       "occupied": false
@@ -228,9 +225,10 @@
   ],
   "PLACEMENT": [
     {
-      "id": 0,
-      "shape_id": 0,
-      "board_id": 0
+      "id": "0",
+      "shape_id": "0",
+      "board_id": "0"
     }
-  ]
+  ],
+  "$schema": "./node_modules/json-server/schema.json"
 }
