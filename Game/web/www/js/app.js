@@ -32,7 +32,7 @@ Promise.all([fetchDb("SHAPE"), fetchDb("INVENTORY_ITEM")])
 		return refreshInventory();
 	})
 	.catch((error) => {
-		console.error("Could not load inventory:", error);
+		console.error("Could not load inventory: ", error);
 	});
 
 function fillInventory() {
@@ -84,7 +84,7 @@ shapeChestButton.addEventListener("click", async () => {
 		});
 		await refreshInventory();
 	} catch (error) {
-		console.error("Could not save inventory item:", error);
+		console.error("Could not save inventory item: ", error);
 	} finally {
 		shapeChestButton.disabled = inventory.length >= maxInventoryItems;
 	}
