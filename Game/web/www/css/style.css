@@ -220,7 +220,7 @@ body[data-theme="light"] .toggle-icon
 
 #popup-window h2
 {
-    font-family: Arial, sans-serif;
+    font-family: "Arial Black", sans-serif;
     text-transform: uppercase;
     font-weight: bold;
     font-size: 16px;
@@ -228,7 +228,7 @@ body[data-theme="light"] .toggle-icon
 
 #grid-size-select
 {
-    font-family: Arial, sans-serif;
+    font-family: "Arial Black", sans-serif;
     text-transform: uppercase;
     font-weight: bold;
     font-size: 12px;
@@ -237,7 +237,7 @@ body[data-theme="light"] .toggle-icon
 
 #start-game-button
 {
-    font-family: Arial, sans-serif;
+    font-family: "Arial Black", sans-serif;
     text-transform: uppercase;
     font-weight: bold;
     font-size: 16px;
