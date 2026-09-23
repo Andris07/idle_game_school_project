@@ -21,6 +21,7 @@
     "difficulty_id": 0,
     "money": 0,
     "last_save_at": ""
+    "grid_size": 6
   },
   "EVENT_TYPE": [
     {
