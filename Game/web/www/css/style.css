@@ -178,6 +178,15 @@ body[data-theme="light"] .toggle-icon
     transform: rotate(180deg);
 }
 
+.restart-icon
+{
+    width: 26px;
+    height: 26px;
+    display: block;
+    filter: var(--filter-accent);
+    transition: transform 0.2s ease;
+}
+
 .theme-toggle
 {
     border: 2px solid var(--accent);

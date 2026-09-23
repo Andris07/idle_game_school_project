@@ -49,7 +49,7 @@ export function addNewGameButton()
 
     const icon = document.createElement("img");
     icon.src = "./src/restart.svg";
-    icon.className = "toggle-icon";
+    icon.className = "restart-icon";
 
     btn.appendChild(icon);
     menu.appendChild(btn);

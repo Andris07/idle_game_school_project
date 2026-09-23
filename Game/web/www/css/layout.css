@@ -125,6 +125,7 @@ footer
 .menu-repository
 {
     justify-content: flex-start;
+    gap: 6px;
 }
 
 .menu-info
@@ -135,6 +136,7 @@ footer
 .menu-theme
 {
     justify-content: flex-end;
+    gap: 6px;
 }
 
 .game-info
