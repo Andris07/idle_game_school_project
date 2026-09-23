@@ -52,7 +52,7 @@ export function addNewGameButton()
     icon.className = "restart-icon";
 
     btn.appendChild(icon);
-    menu.appendChild(btn);
+    menu.prepend(btn);
 
     btn.addEventListener("click", async () =>
     {
