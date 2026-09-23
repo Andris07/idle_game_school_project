@@ -125,6 +125,7 @@ footer
 .menu-repository
 {
     justify-content: flex-start;
+    gap: 6px;
 }
 
 .menu-info
@@ -135,6 +136,7 @@ footer
 .menu-theme
 {
     justify-content: flex-end;
+    gap: 6px;
 }
 
 .game-info
@@ -162,4 +164,41 @@ footer
     align-items: center;
     justify-content: center;
     padding: 0px;
+}
+
+#popup-overlay
+{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 9999;
+    position: fixed;
+    inset: 0;
+}
+
+#popup-window
+{
+    width: min(90%, 300px);
+
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    padding: 36px;
+    text-align: center;
+}
+
+#grid-size-select
+{
+    padding: 8px;
+}
+
+#start-game-button
+{
+    padding: 12px;
+}
+
+.playgrid-grid
+{
+    width: 100%;
+    height: 100%;
 }

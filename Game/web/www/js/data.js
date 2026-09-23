@@ -1,23 +1,54 @@
-let BASE_URL = "http://localhost:3000";
+export const BASE_URL = "http://localhost:3000";
 
-export async function fetchDb(dbName) {
-    const fetchDb = await fetch(`${BASE_URL}/${dbName}`,{
+export async function fetchDb(dbName)
+{
+    const fetchDb = await fetch(`${BASE_URL}/${dbName}`,
+    {
         method: "GET",
-        headers: {
+        headers:
+        {
             "Accept": "application/json"
         }
     });
     return await fetchDb.json();
 }
 
-export async function postDb(dbName, data) {
-    const postDb = await fetch(`${BASE_URL}/${dbName}`,{
+export async function postDb(dbName, data)
+{
+    const postDb = await fetch(`${BASE_URL}/${dbName}`,
+    {
         method: "POST",
-        headers: {
+        headers:
+        {
             Accept: "application/json",
             "Content-Type": "application/json"
         },
         body: JSON.stringify(data)
     });
     return await postDb.json();
+}
+
+export async function putDb(dbName, data)
+{
+    const putDb = await fetch(`${BASE_URL}/${dbName}`,
+    {
+        method: "PUT",
+        headers:
+        {
+            "Accept": "application/json",
+            "Content-Type": "application/json"
+        },
+        body: JSON.stringify(data)
+    });
+    return await putDb.json();
+}
+
+export async function deleteDbById(dbName, id)
+{
+    const deleteDb = await fetch(`${BASE_URL}/${dbName}/${id}`,
+    {
+        method: "DELETE",
+        headers: { "Accept": "application/json" }
+    });
+    return deleteDb.ok;
 }

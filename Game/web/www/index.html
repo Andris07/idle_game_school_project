@@ -5,13 +5,16 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Tetris</title>
 
+    <link rel="icon" type="image/x-icon" href="./src/tetris.ico">
     <link rel="stylesheet" href="./css/style.css">
     <link rel="stylesheet" href="./css/colors.css">
     <link rel="stylesheet" href="./css/layout.css">
     <link rel="stylesheet" href="./css/responsive.css">
 
     <script src="./js/app.js" type="module"></script>
-    <script src="./js/theme.js" defer></script>
+    <script src="./js/theme.js" type="module" defer></script>
+    <script src="./js/game.js" type="module" defer></script>
+    <script src="./js/popup.js" type="module" defer></script>
 </head>
 
 <body data-theme="dark">
@@ -49,7 +52,7 @@
         <!-- RIGHT: Theme toggle -->
         <div class="menu-section menu-theme">
             <button id="theme-toggle" class="theme-toggle" type="button">
-                <img src="../src/sun.svg" class="toggle-icon">
+                <img src="./src/sun.svg" class="toggle-icon">
             </button>
         </div>
     </nav>

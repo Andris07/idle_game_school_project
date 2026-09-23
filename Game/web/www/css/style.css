@@ -178,6 +178,15 @@ body[data-theme="light"] .toggle-icon
     transform: rotate(180deg);
 }
 
+.restart-icon
+{
+    width: 26px;
+    height: 26px;
+    display: block;
+    filter: var(--filter-accent);
+    transition: transform 0.2s ease;
+}
+
 .theme-toggle
 {
     border: 2px solid var(--accent);
@@ -202,4 +211,69 @@ body[data-theme="light"] .toggle-icon
 {
     outline: 2px solid var(--secondary);
     outline-offset: 3px;
+}
+
+#popup-overlay
+{
+    background: rgba(0, 0, 0, 0.5);
+    backdrop-filter: blur(3px);
+}
+
+#popup-window
+{
+    background-color: var(--surface);
+    color: var(--background-text);
+    border: 3px solid var(--accent);
+    border-radius: 12px;
+}
+
+#popup-window h2
+{
+    font-family: "Arial Black", sans-serif;
+    text-transform: uppercase;
+    font-weight: bold;
+    font-size: 16px;
+}
+
+#grid-size-select
+{
+    font-family: "Arial Black", sans-serif;
+    text-transform: uppercase;
+    font-weight: bold;
+    font-size: 12px;
+    text-align: center;
+}
+
+#start-game-button
+{
+    font-family: "Arial Black", sans-serif;
+    text-transform: uppercase;
+    font-weight: bold;
+    font-size: 16px;
+}
+
+#grid-size-select
+{
+    background-color: var(--itemcont);
+    color: var(--background-text);
+    border: 2px solid var(--accent);
+    border-radius: 8px;
+    font-size: 16px;
+}
+
+#start-game-button
+{
+    background-color: var(--secondary);
+    color: var(--background-text);
+    border: none;
+    border-radius: 8px;
+    font-weight: bold;
+    cursor: pointer;
+}
+
+.play-cell
+{
+    background-color: var(--surface);
+    border: 2px solid var(--accent);
+    border-radius: 3px;
 }
