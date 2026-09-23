@@ -11,6 +11,10 @@ body
     color: var(--background-text);
 }
 
+hr{
+    border: 2px solid var(--accent);
+}
+
 .container
 {
     background-color: var(--surface);
@@ -43,7 +47,7 @@ body
 
 .buy-button
 {
-    color: var(--white);
+    color: var(--background-text);
     background-color: var(--orange);
     height: 70%;
     width: 70%;
@@ -52,6 +56,7 @@ body
     border: 0px;
     border-radius: 5px;
     font-weight: bold;
+    font-family: "Arial Black", sans-serif;
 }
 
 .buy-button:disabled
@@ -77,6 +82,13 @@ body
     text-align: center;
 }
 
+.inventory-item p
+{
+    padding-top: 8px;
+    font-family: "Arial Black", sans-serif;
+    font-weight: lighter;
+    font-size: 12px;
+}
 .shape-grid
 {
     width: min(100%, 72px);
