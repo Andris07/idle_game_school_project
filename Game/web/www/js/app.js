@@ -80,7 +80,7 @@ shapeChestButton.addEventListener("click", async () => {
 		await postDb("INVENTORY_ITEM", {
 			id: nextInventoryId,
 			shape_id: shape.id,
-			value: shape.base_value
+			value: shape.base_value + Math.floor(Math.random() * 50),
 		});
 		await refreshInventory();
 	} catch (error) {

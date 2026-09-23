@@ -215,36 +215,7 @@
     }
   ],
   "INVENTORY_ITEM": [
-    {
-      "id": 1,
-      "shape_id": 1,
-      "value": 0
-    },
-    {
-      "id": 2,
-      "shape_id": 1,
-      "value": 0
-    },
-    {
-      "id": 3,
-      "shape_id": 3,
-      "value": 0
-    },
-    {
-      "id": 4,
-      "shape_id": 2,
-      "value": 0
-    },
-    {
-      "id": 5,
-      "shape_id": 4,
-      "value": 0
-    },
-    {
-      "id": 6,
-      "shape_id": 5,
-      "value": 0
-    }
+    
   ],
   "BOARD_CELL": [
     {
