@@ -28,15 +28,27 @@ export async function postDb(dbName, data)
     return await postDb.json();
 }
 
-export async function deleteDb(dbName)
+export async function putDbById(dbName, id, data)
 {
-    const response = await fetch(`${BASE_URL}/${dbName}`,
+    const putDb = await fetch(`${BASE_URL}/${dbName}/${id}`,
     {
-        method: "DELETE",
+        method: "PUT",
         headers:
         {
-            "Accept": "application/json"
-        }
+            "Accept": "application/json",
+            "Content-Type": "application/json"
+        },
+        body: JSON.stringify(data)
+    });
+    return await putDb.json();
+}
+
+export async function deleteDbById(dbName, id)
+{
+    const response = await fetch(`${BASE_URL}/${dbName}/${id}`,
+    {
+        method: "DELETE",
+        headers: { "Accept": "application/json" }
     });
     return response.ok;
 }
