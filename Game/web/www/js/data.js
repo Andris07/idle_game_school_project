@@ -27,3 +27,16 @@ export async function postDb(dbName, data)
     });
     return await postDb.json();
 }
+
+export async function deleteDb(dbName)
+{
+    const response = await fetch(`${BASE_URL}/${dbName}`,
+    {
+        method: "DELETE",
+        headers:
+        {
+            "Accept": "application/json"
+        }
+    });
+    return response.ok;
+}

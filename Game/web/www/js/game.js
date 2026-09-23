@@ -16,8 +16,23 @@ export async function saveGameSession(size)
 
 export async function clearGameSession()
 {
-    await fetch(`${BASE_URL}/GAME_SESSION`, { method: "DELETE" });
-    await fetch(`${BASE_URL}/INVENTORY_ITEM`, { method: "DELETE" });
+    try
+    {
+        await deleteDb("GAME_SESSION");
+    }
+    catch (e)
+    {
+        console.warn("GAME_SESSION already empty");
+    }
+
+    try
+    {
+        await deleteDb("INVENTORY_ITEM");
+    }
+    catch (e)
+    {
+        console.warn("INVENTORY_ITEM already empty");
+    }
 }
 
 export function generatePlayGrid(size)
