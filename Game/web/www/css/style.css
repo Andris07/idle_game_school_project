@@ -218,6 +218,31 @@ body[data-theme="light"] .toggle-icon
     border-radius: 12px;
 }
 
+#popup-window h2
+{
+    font-family: Arial, sans-serif;
+    text-transform: uppercase;
+    font-weight: bold;
+    font-size: 16px;
+}
+
+#grid-size-select
+{
+    font-family: Arial, sans-serif;
+    text-transform: uppercase;
+    font-weight: bold;
+    font-size: 12px;
+    text-align: center;
+}
+
+#start-game-button
+{
+    font-family: Arial, sans-serif;
+    text-transform: uppercase;
+    font-weight: bold;
+    font-size: 16px;
+}
+
 #grid-size-select
 {
     background-color: var(--itemcont);

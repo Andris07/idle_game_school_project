@@ -24,7 +24,7 @@ export function showGridPopup()
 
     const startButton = document.createElement("button");
     startButton.id = "start-game-button";
-    startButton.textContent = "Start Game";
+    startButton.textContent = "start Game";
 
     startButton.addEventListener("click", async () =>
     {
