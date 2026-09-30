@@ -223,12 +223,6 @@
       "occupied": false
     }
   ],
-  "PLACEMENT": [
-    {
-      "id": "0",
-      "shape_id": "0",
-      "board_id": "0"
-    }
-  ],
+  "PLACEMENT": [],
   "$schema": "./node_modules/json-server/schema.json"
 }
