@@ -336,3 +336,38 @@ html[data-theme="light"] .toggle-icon
     border: 2px solid var(--accent);
     border-radius: 3px;
 }
+
+/* Drag & drop */
+.playgrid-grid .play-cell-filled
+{
+    background-color: var(--secondary);
+    border-color: var(--secondary);
+}
+
+.playgrid-grid .play-cell-preview-valid
+{
+    background-color: var(--valid-soft);
+    border-color: var(--valid);
+}
+
+.playgrid-grid .play-cell-preview-invalid
+{
+    background-color: var(--invalid-soft);
+    border-color: var(--invalid);
+}
+
+.drag-ghost-cell-filled
+{
+    background-color: var(--secondary);
+    border: 1px solid var(--text);
+}
+
+.drag-ghost-valid .drag-ghost-cell-filled
+{
+    background-color: var(--valid);
+}
+
+.drag-ghost-invalid .drag-ghost-cell-filled
+{
+    background-color: var(--invalid);
+}

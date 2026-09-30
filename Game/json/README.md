@@ -347,6 +347,12 @@ docker build -t json/json-alpine .
 docker run -d --name json -p 3000:3000 -v "./db.json:/data/db.json" json/json-alpine /data/db.json
 ```
 
+**FOR THIS SPECIFIC PROJECT, RUN THIS COMMAND WHEN STARTING A CONTAINER**
+```bash
+docker run -d --name json -p 3000:3000 -v "./databases:/data" json/json-alpine /data/db.json
+```
+
+
 Your JSON API is now available at:
 
 ```text

@@ -7,56 +7,67 @@ const inventory = [];
 const shapeChestButton = document.querySelector("#shape-chest-button");
 const maxInventoryItems = 8;
 
-async function refreshInventory() {
+export async function refreshInventory()
+{
 	const items = await fetchDb("INVENTORY_ITEM");
-	nextInventoryId = items.reduce(
-		(maxId, item) => Math.max(maxId, Number(item.id) || 0),
-		-1
-	) + 1;
+	nextInventoryId = items.reduce((maxId, item) => Math.max(maxId, Number(item.id) || 0), -1) + 1;
 
-	const shapesInInventory = items
-		.map((item) => {
-			const shape = tetrisShapes.find(
-				(shape) => Number(shape.id) === Number(item.shape_id)
-			);
-			return shape ? {
-				...shape,
-				value: item.value,
-				inventoryItemId: item.id,
-				cells: item.cells ?? shape.cells,
-			} : null;
-		})
-		.filter(Boolean);
+	const shapesInInventory = items.map((item) =>
+	{
+		const shape = tetrisShapes.find((shape) => Number(shape.id) === Number(item.shape_id));
+
+		return shape ?
+		{
+			...shape,
+			value: item.value,
+			inventoryItemId: item.id,
+			cells: item.cells ?? shape.cells,
+		} : null;
+	}).filter(Boolean);
+
 	inventory.splice(0, inventory.length, ...shapesInInventory);
 	fillInventory();
+	shapeChestButton.disabled = inventory.length >= maxInventoryItems;
 }
 
 Promise.all([fetchDb("SHAPE"), fetchDb("INVENTORY_ITEM")])
-	.then(([shapes]) => {
+	.then(([shapes]) =>
+	{
 		tetrisShapes = shapes;
 		return refreshInventory();
 	})
-	.catch((error) => {
+	.catch((error) =>
+	{
 		console.error("Could not load inventory: ", error);
 	});
 
-function fillInventory() {
+function fillInventory()
+{
 	inventoryElement.replaceChildren();
 
-	inventory.forEach((shape) => {
+	inventory.forEach((shape) =>
+	{
 		const item = document.createElement("div");
 		item.className = "inventory-item";
 		item.setAttribute("aria-label", `${shape.name} shape`);
+		item.dataset.inventoryItemId = shape.inventoryItemId;
+		item.dataset.shapeId = shape.id;
+		item.dataset.value = shape.value;
+		item.dataset.cells = JSON.stringify(shape.cells);
 
 		const grid = document.createElement("div");
 		grid.className = "shape-grid";
 		const filledCells = new Set(shape.cells.map(([column, row]) => `${column},${row}`));
 
-		for (let row = 0; row < 4; row += 1) {
-			for (let column = 0; column < 4; column += 1) {
+		for (let row = 0; row < 4; row += 1)
+		{
+			for (let column = 0; column < 4; column += 1)
+			{
 				const cell = document.createElement("div");
 				cell.className = "shape-cell";
-				if (filledCells.has(`${column},${row}`)) {
+
+				if (filledCells.has(`${column},${row}`))
+				{
 					cell.classList.add("shape-cell-filled");
 				}
 				grid.appendChild(cell);
@@ -77,20 +88,26 @@ function fillInventory() {
 		rotateIcon.alt = "";
 		rotateButton.appendChild(rotateIcon);
 
-		rotateButton.addEventListener("click", async () => {
+		rotateButton.addEventListener("click", async () =>
+		{
 			rotateButton.disabled = true;
 			const rotatedCells = shape.cells.map(([column, row]) => [3 - row, column]);
 
-			try {
-				await putDbById("INVENTORY_ITEM", shape.inventoryItemId, {
+			try
+			{
+				await putDbById("INVENTORY_ITEM", shape.inventoryItemId,
+				{
 					id: shape.inventoryItemId,
 					shape_id: shape.id,
 					value: shape.value,
 					cells: rotatedCells,
 				});
+
 				shape.cells = rotatedCells;
 				fillInventory();
-			} catch (error) {
+			}
+			catch (error)
+			{
 				console.error("Could not rotate inventory item: ", error);
 				rotateButton.disabled = false;
 			}
@@ -101,24 +118,34 @@ function fillInventory() {
 	});
 }
 
-shapeChestButton.addEventListener("click", async () => {
+shapeChestButton.addEventListener("click", async () =>
+{
 	const shape = tetrisShapes[Math.floor(Math.random() * tetrisShapes.length)];
 	shapeChestButton.disabled = true;
-	if (inventory.length >= maxInventoryItems) {
+
+	if (inventory.length >= maxInventoryItems)
+	{
 		alert("Inventory is full! Please remove an item before adding a new one.");
 		shapeChestButton.disabled = false;
 		return;
 	}
-	try {
-		await postDb("INVENTORY_ITEM", {
+
+	try
+	{
+		await postDb("INVENTORY_ITEM",
+		{
 			id: nextInventoryId,
 			shape_id: shape.id,
 			value: shape.base_value + Math.floor(Math.random() * 50),
 		});
 		await refreshInventory();
-	} catch (error) {
+	}
+	catch (error)
+	{
 		console.error("Could not save inventory item: ", error);
-	} finally {
+	}
+	finally
+	{
 		shapeChestButton.disabled = inventory.length >= maxInventoryItems;
 	}
 });
