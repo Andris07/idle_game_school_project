@@ -176,14 +176,14 @@ footer a
     transition: transform 0.35s ease;
 }
 
-body[data-theme="dark"] .toggle-icon
+html[data-theme="dark"] .toggle-icon
 {
     content: url("../src/sun.svg");
     filter: var(--filter-secondary);
     transform: rotate(0deg);
 }
 
-body[data-theme="light"] .toggle-icon
+html[data-theme="light"] .toggle-icon
 {
     content: url("../src/moon.svg");
     filter: var(--filter-accent);
