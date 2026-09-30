@@ -89,6 +89,24 @@ hr{
     font-weight: lighter;
     font-size: 12px;
 }
+
+.rotate-shape-button
+{
+    padding: 3px 8px;
+    border: 1px solid var(--accent);
+    border-radius: 3px;
+    background-color: transparent;
+    color: var(--text);
+    cursor: pointer;
+    font-size: 11px;
+}
+
+.rotate-shape-button:disabled
+{
+    cursor: wait;
+    opacity: 0.6;
+}
+
 .shape-grid
 {
     width: min(100%, 72px);
