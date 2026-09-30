@@ -1,4 +1,4 @@
-import { fetchDb, postDb, deleteDbById } from "./data.js";
+import { fetchDb, postDb, putDbById, deleteDbById } from "./data.js";
 import { refreshInventory } from "./app.js";
 
 const SHAPE_SIZE = 4;
@@ -84,6 +84,69 @@ function checkPlacement(board, absoluteCells)
     }
 
     return { valid, insideCount };
+}
+
+function getCompletedLines(board, absoluteCells)
+{
+    const newCells = new Set(absoluteCells.map(([column, row]) => cellKey(column, row)));
+    const isOccupied = (column, row) =>
+        occupied.has(cellKey(column, row)) || newCells.has(cellKey(column, row));
+    const completedRows = [];
+    const completedColumns = [];
+
+    for (let index = 0; index < board.size; index += 1)
+    {
+        if (Array.from({ length: board.size }, (_, column) => isOccupied(column, index)).every(Boolean))
+        {
+            completedRows.push(index);
+        }
+
+        if (Array.from({ length: board.size }, (_, row) => isOccupied(index, row)).every(Boolean))
+        {
+            completedColumns.push(index);
+        }
+    }
+
+    return { rows: completedRows, columns: completedColumns };
+}
+
+async function clearCompletedLines(completedLines)
+{
+    const rows = new Set(completedLines.rows);
+    const columns = new Set(completedLines.columns);
+    const updatedPlacements = [];
+
+    for (const placement of placements)
+    {
+        const remainingCells = placement.cells.filter(([column, row]) =>
+        {
+            const absoluteColumn = Number(placement.x_coord) + column;
+            const absoluteRow = Number(placement.y_coord) + row;
+
+            return !rows.has(absoluteRow) && !columns.has(absoluteColumn);
+        });
+
+        if (remainingCells.length === placement.cells.length)
+        {
+            updatedPlacements.push(placement);
+            continue;
+        }
+
+        if (remainingCells.length === 0)
+        {
+            const removed = await deleteDbById("PLACEMENT", placement.id);
+
+            if (!removed) throw new Error(`Could not clear placement ${placement.id}`);
+        }
+        else
+        {
+            const updated = { ...placement, cells: remainingCells };
+            await putDbById("PLACEMENT", placement.id, updated);
+            updatedPlacements.push(updated);
+        }
+    }
+
+    placements = updatedPlacements;
 }
 
 function isValidPlacement(placement)
@@ -409,6 +472,8 @@ async function dropOnBoard(data, target)
 
         if (!checkPlacement(board, absoluteCells).valid) return;
 
+        const completedLines = getCompletedLines(board, absoluteCells);
+
         const placement =
         {
             id: nextPlacementId,
@@ -438,6 +503,16 @@ async function dropOnBoard(data, target)
         placements.push(placement);
         nextPlacementId += 1;
         savedPlacement = null;
+
+        try
+        {
+            await clearCompletedLines(completedLines);
+        }
+        catch (error)
+        {
+            console.error("Could not clear completed lines: ", error);
+        }
+
         renderPlacements();
     }
     catch (error)
