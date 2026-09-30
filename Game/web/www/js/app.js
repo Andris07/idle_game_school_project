@@ -58,12 +58,10 @@ function fillInventory() {
 			}
 		}
 
-		const name = document.createElement("strong");
-		name.textContent = `${shape.name}`;
 		const value = document.createElement("p");
-		value.textContent = `Value: ${shape.value}`;
+		value.textContent = `${shape.value}$`;
 
-		item.append(grid, name, value);
+		item.append(grid, value);
 		inventoryElement.appendChild(item);
 	});
 }
