@@ -69,8 +69,14 @@ function fillInventory() {
 		const rotateButton = document.createElement("button");
 		rotateButton.className = "rotate-shape-button";
 		rotateButton.type = "button";
-		rotateButton.textContent = "Rotate";
 		rotateButton.setAttribute("aria-label", `Rotate ${shape.name} shape`);
+
+		const rotateIcon = document.createElement("img");
+		rotateIcon.className = "rotate-icon";
+		rotateIcon.src = "./src/rotate.svg";
+		rotateIcon.alt = "";
+		rotateButton.appendChild(rotateIcon);
+
 		rotateButton.addEventListener("click", async () => {
 			rotateButton.disabled = true;
 			const rotatedCells = shape.cells.map(([column, row]) => [3 - row, column]);

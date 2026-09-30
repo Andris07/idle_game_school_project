@@ -31,12 +31,12 @@ hr{
 
 #shopgrid
 {
-    border-radius: 20px 0px 0px 20px;
+    border-radius: 10px 0px 0px 10px;
 }
 
 #playgrid
 {
-    border-radius: 0px 20px 20px 0px;
+    border-radius: 0px 10px 10px 0px;
 }
 
 .chest-img img
@@ -92,13 +92,42 @@ hr{
 
 .rotate-shape-button
 {
-    padding: 3px 8px;
-    border: 1px solid var(--accent);
-    border-radius: 3px;
+    width: 30px;
+    height: 30px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0;
+    border: 2px solid var(--accent);
+    border-radius: 50%;
     background-color: transparent;
-    color: var(--text);
     cursor: pointer;
-    font-size: 11px;
+    transition: transform 0.25s ease, box-shadow 0.25s ease;
+}
+
+.rotate-icon
+{
+    width: 26px;
+    height: 26px;
+    display: block;
+    filter: var(--filter-accent);
+}
+
+.rotate-shape-button:hover
+{
+    transform: scale(1.08);
+    box-shadow: 0 0 6px var(--accent), 0 0 12px var(--accent);
+}
+
+.rotate-shape-button:active
+{
+    transform: scale(0.92);
+}
+
+.rotate-shape-button:focus-visible
+{
+    outline: 2px solid var(--secondary);
+    outline-offset: 3px;
 }
 
 .rotate-shape-button:disabled
