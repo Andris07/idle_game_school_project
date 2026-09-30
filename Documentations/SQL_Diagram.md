@@ -54,7 +54,12 @@ erDiagram
     PLACEMENT {
         INT id PK
         INT shape_id FK
-        INT board_id FK
+        DECIMAL value
+        JSON cells
+        INT x_coord
+        INT y_coord
+        INT completed_rows
+        INT completed_columns
     }
 
     EVENT_TYPE {
