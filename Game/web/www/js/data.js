@@ -43,6 +43,21 @@ export async function putDb(dbName, data)
     return await putDb.json();
 }
 
+export async function putDbById(dbName, id, data)
+{
+    const response = await fetch(`${BASE_URL}/${dbName}/${id}`,
+    {
+        method: "PUT",
+        headers:
+        {
+            "Accept": "application/json",
+            "Content-Type": "application/json"
+        },
+        body: JSON.stringify(data)
+    });
+    return await response.json();
+}
+
 export async function deleteDbById(dbName, id)
 {
     const deleteDb = await fetch(`${BASE_URL}/${dbName}/${id}`,

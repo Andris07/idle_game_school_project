@@ -1,4 +1,4 @@
-import { fetchDb, postDb } from "./data.js";
+import { fetchDb, postDb, putDbById } from "./data.js";
 
 let tetrisShapes = [];
 let nextInventoryId = 0;
@@ -19,7 +19,12 @@ async function refreshInventory() {
 			const shape = tetrisShapes.find(
 				(shape) => Number(shape.id) === Number(item.shape_id)
 			);
-			return shape ? { ...shape, value: item.value } : null;
+			return shape ? {
+				...shape,
+				value: item.value,
+				inventoryItemId: item.id,
+				cells: item.cells ?? shape.cells,
+			} : null;
 		})
 		.filter(Boolean);
 	inventory.splice(0, inventory.length, ...shapesInInventory);
@@ -61,7 +66,37 @@ function fillInventory() {
 		const value = document.createElement("p");
 		value.textContent = `${shape.value}$`;
 
-		item.append(grid, value);
+		const rotateButton = document.createElement("button");
+		rotateButton.className = "rotate-shape-button";
+		rotateButton.type = "button";
+		rotateButton.setAttribute("aria-label", `Rotate ${shape.name} shape`);
+
+		const rotateIcon = document.createElement("img");
+		rotateIcon.className = "rotate-icon";
+		rotateIcon.src = "./src/rotate.svg";
+		rotateIcon.alt = "";
+		rotateButton.appendChild(rotateIcon);
+
+		rotateButton.addEventListener("click", async () => {
+			rotateButton.disabled = true;
+			const rotatedCells = shape.cells.map(([column, row]) => [3 - row, column]);
+
+			try {
+				await putDbById("INVENTORY_ITEM", shape.inventoryItemId, {
+					id: shape.inventoryItemId,
+					shape_id: shape.id,
+					value: shape.value,
+					cells: rotatedCells,
+				});
+				shape.cells = rotatedCells;
+				fillInventory();
+			} catch (error) {
+				console.error("Could not rotate inventory item: ", error);
+				rotateButton.disabled = false;
+			}
+		});
+
+		item.append(grid, value, rotateButton);
 		inventoryElement.appendChild(item);
 	});
 }
