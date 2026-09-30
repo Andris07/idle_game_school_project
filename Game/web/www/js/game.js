@@ -41,9 +41,13 @@ export async function clearGameSession()
 
     const items = await fetchDb("INVENTORY_ITEM");
 
-    await Promise.all(
-        items.map(item => deleteDbById("INVENTORY_ITEM", item.id))
-    );
+    await Promise.all(items.map(item => deleteDbById("INVENTORY_ITEM", item.id)));
+
+    const placements = await fetchDb("PLACEMENT");
+
+    await Promise.all(placements.map(placement => deleteDbById("PLACEMENT", placement.id)));
+
+    refresh
 }
 
 export function generatePlayGrid(size)

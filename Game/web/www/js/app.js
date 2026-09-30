@@ -7,7 +7,7 @@ const inventory = [];
 const shapeChestButton = document.querySelector("#shape-chest-button");
 const maxInventoryItems = 8;
 
-async function refreshInventory()
+export async function refreshInventory()
 {
 	const items = await fetchDb("INVENTORY_ITEM");
 	nextInventoryId = items.reduce((maxId, item) => Math.max(maxId, Number(item.id) || 0), -1) + 1;
@@ -27,6 +27,7 @@ async function refreshInventory()
 
 	inventory.splice(0, inventory.length, ...shapesInInventory);
 	fillInventory();
+	shapeChestButton.disabled = inventory.length >= maxInventoryItems;
 }
 
 Promise.all([fetchDb("SHAPE"), fetchDb("INVENTORY_ITEM")])
@@ -49,6 +50,10 @@ function fillInventory()
 		const item = document.createElement("div");
 		item.className = "inventory-item";
 		item.setAttribute("aria-label", `${shape.name} shape`);
+		item.dataset.inventoryItemId = shape.inventoryItemId;
+		item.dataset.shapeId = shape.id;
+		item.dataset.value = shape.value;
+		item.dataset.cells = JSON.stringify(shape.cells);
 
 		const grid = document.createElement("div");
 		grid.className = "shape-grid";
