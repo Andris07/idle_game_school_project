@@ -3,6 +3,7 @@ import { showGridPopup, addNewGameButton } from "./popup.js";
 import { startMoneySystem, stopMoneySystem, waitForPendingSaves } from "./money.js";
 import { refreshInventory } from "./app.js";
 import { loadPlacements, resetPlacements } from "./placement.js";
+import "./chests.js";
 
 const STARTING_MONEY = 100;
 
