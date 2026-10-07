@@ -77,6 +77,60 @@ export function showGridPopup(onStart)
     document.body.appendChild(overlay);
 }
 
+// generic message window (chest results, errors), uses the same overlay + window as the difficulty popup
+export function showMessagePopup(title, lines = [], isError = false)
+{
+    // no multiple popups at the same time
+    if (document.querySelector("#popup-overlay")) return;
+
+    const overlay = document.createElement("div");
+    overlay.id = "popup-overlay";
+
+    const popup = document.createElement("div");
+    popup.id = "popup-window";
+    popup.setAttribute("role", isError ? "alert" : "dialog");
+
+    const heading = document.createElement("h2");
+    heading.textContent = title;
+    popup.appendChild(heading);
+
+    lines.forEach((line) =>
+    {
+        const message = document.createElement("p");
+        message.className = isError ? "popup-message popup-message-error" : "popup-message";
+        message.textContent = line;
+        popup.appendChild(message);
+    });
+
+    const closeButton = document.createElement("button");
+    closeButton.id = "popup-close-button";
+    closeButton.type = "button";
+    closeButton.textContent = "ok";
+
+    const onKeyDown = (event) =>
+    {
+        if (event.key === "Escape" || event.key === "Enter") close();
+    };
+
+    function close()
+    {
+        document.removeEventListener("keydown", onKeyDown);
+        overlay.remove();
+    }
+
+    closeButton.addEventListener("click", close);
+    overlay.addEventListener("click", (event) =>
+    {
+        if (event.target === overlay) close();
+    });
+    document.addEventListener("keydown", onKeyDown);
+
+    popup.appendChild(closeButton);
+    overlay.appendChild(popup);
+    document.body.appendChild(overlay);
+    closeButton.focus();
+}
+
 export function addNewGameButton(onClick)
 {
     const menu = document.querySelector(".menu-theme");
