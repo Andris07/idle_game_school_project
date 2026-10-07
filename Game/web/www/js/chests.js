@@ -47,11 +47,7 @@ async function refund(cost)
 // Shape Chest: a random shape goes to the inventory, its value is based on the CURRENT base_value of the shape
 shapeChestButton.addEventListener("click", async () =>
 {
-    if (isInventoryFull())
-    {
-        showError("Shape Chest", "Inventory is full! Place a shape on the board before opening a new chest.");
-        return;
-    }
+    if (isInventoryFull()) return;
 
     shapeChestButton.disabled = true;
     let shouldRefund = false;
