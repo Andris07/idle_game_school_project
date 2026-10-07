@@ -1,5 +1,6 @@
 import { BASE_URL, fetchDb, postDb, putDb, deleteDbById } from "./data.js";
 import { showGridPopup, addNewGameButton } from "./popup.js";
+import { startMoneySystem, stopMoneySystem } from "./money.js";
 
 const playgrid = document.querySelector("#playgrid");
 
@@ -27,10 +28,14 @@ export async function saveGameSession(difficulty_id)
         money: 0,
         last_save_at: "",
     });
+
+    await startMoneySystem();
 }
 
 export async function clearGameSession()
 {
+    stopMoneySystem();
+
     await putDb("GAME_SESSION",
     {
         id: "0",
@@ -46,8 +51,6 @@ export async function clearGameSession()
     const placements = await fetchDb("PLACEMENT");
 
     await Promise.all(placements.map(placement => deleteDbById("PLACEMENT", placement.id)));
-
-    refresh
 }
 
 export function generatePlayGrid(size)
@@ -84,6 +87,7 @@ export function generatePlayGrid(size)
     }
     else
     {
+        await startMoneySystem();
         generatePlayGrid(size);
     }
 })();

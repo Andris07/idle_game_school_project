@@ -28,11 +28,12 @@ export async function postDb(dbName, data)
     return await postDb.json();
 }
 
-export async function putDb(dbName, data)
+export async function putDb(dbName, data, options = {})
 {
     const putDb = await fetch(`${BASE_URL}/${dbName}`,
     {
         method: "PUT",
+        keepalive: options.keepalive ?? false,
         headers:
         {
             "Accept": "application/json",

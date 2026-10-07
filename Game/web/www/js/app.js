@@ -136,7 +136,7 @@ shapeChestButton.addEventListener("click", async () =>
 		{
 			id: nextInventoryId,
 			shape_id: shape.id,
-			value: shape.base_value + Math.floor(Math.random() * 50),
+			value: 5 + Math.floor(Math.random() * 5),
 		});
 		await refreshInventory();
 	}
