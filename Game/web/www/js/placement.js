@@ -1,5 +1,6 @@
 import { fetchDb, postDb, putDbById, deleteDbById } from "./data.js";
 import { refreshInventory } from "./app.js";
+import { addMoney, refreshPassiveIncome } from "./money.js";
 
 const SHAPE_SIZE = 4;
 const DRAG_START_DISTANCE = 4;
@@ -108,6 +109,44 @@ function getCompletedLines(board, absoluteCells)
     }
 
     return { rows: completedRows, columns: completedColumns };
+}
+
+function getCompletedLineReward(completedLines, boardSize)
+{
+    const getLineReward = (touchesLine) =>
+    {
+        const shapesInLine = new Map();
+
+        for (const placement of placements)
+        {
+            if (placement.cells.some(([column, row]) => touchesLine(placement, column, row)))
+            {
+                shapesInLine.set(placement.id ?? placement, placement);
+            }
+        }
+
+        const shapes = Array.from(shapesInLine.values());
+        const totalValue = shapes.reduce((total, placement) => total + (Number(placement.value) || 0), 0);
+        return totalValue * shapes.length;
+    };
+
+    const lineRewards = [
+        ...completedLines.rows.map((row) => getLineReward((placement, column, localRow) =>
+            Number(placement.y_coord) + localRow === row
+            && Number(placement.x_coord) + column >= 0
+            && Number(placement.x_coord) + column < boardSize)),
+        ...completedLines.columns.map((column) => getLineReward((placement, localColumn, row) =>
+            Number(placement.x_coord) + localColumn === column
+            && Number(placement.y_coord) + row >= 0
+            && Number(placement.y_coord) + row < boardSize)),
+    ];
+
+    if (lineRewards.length === 0) return 0;
+
+    const totalReward = lineRewards.reduce((total, reward) => total + reward, 0);
+    const comboMultiplier = Math.max(2, 1 + 0.25 * (lineRewards.length - 1));
+
+    return totalReward * comboMultiplier;
 }
 
 async function clearCompletedLines(completedLines)
@@ -504,6 +543,12 @@ async function dropOnBoard(data, target)
         nextPlacementId += 1;
         savedPlacement = null;
 
+        const lineReward = getCompletedLineReward(completedLines, board.size);
+        if (lineReward > 0)
+        {
+            await addMoney(lineReward);
+        }
+
         try
         {
             await clearCompletedLines(completedLines);
@@ -514,6 +559,7 @@ async function dropOnBoard(data, target)
         }
 
         renderPlacements();
+        await refreshPassiveIncome();
     }
     catch (error)
     {
