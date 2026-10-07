@@ -184,7 +184,8 @@ footer
     padding: 8px;
 }
 
-#start-game-button
+#start-game-button,
+#popup-close-button
 {
     padding: 12px;
 }

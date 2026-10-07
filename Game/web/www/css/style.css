@@ -316,7 +316,8 @@ html[data-theme="light"] .toggle-icon
     border-radius: 8px;
 }
 
-#start-game-button
+#start-game-button,
+#popup-close-button
 {
     font-family: "Arial Black", sans-serif;
     text-transform: uppercase;
@@ -327,6 +328,18 @@ html[data-theme="light"] .toggle-icon
     border: none;
     border-radius: 8px;
     cursor: pointer;
+}
+
+.popup-message
+{
+    margin: 0;
+    font-size: 14px;
+}
+
+.popup-message-error
+{
+    color: var(--invalid);
+    font-weight: bold;
 }
 
 #start-game-button:disabled
