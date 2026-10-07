@@ -147,7 +147,7 @@ shapeChestButton.addEventListener("click", async () =>
 		{
 			id: nextInventoryId,
 			shape_id: shape.id,
-			value: 5 + Math.floor(Math.random() * 5),
+			value: 5 + Math.floor(Math.random() * 5) + 1,
 		});
 		shouldRefund = false;
 		await refreshInventory();
