@@ -1,4 +1,4 @@
-import { fetchDb, putDb, deleteDbById } from "./data.js";
+import { fetchDb, putDb, putDbById, deleteDbById } from "./data.js";
 import { showGridPopup, addNewGameButton } from "./popup.js";
 import { startMoneySystem, stopMoneySystem, waitForPendingSaves } from "./money.js";
 import { refreshInventory } from "./app.js";
@@ -45,21 +45,23 @@ export async function clearGameSession()
 
     await putDb("GAME_SESSION", createSession());
 
-    const [items, placements] = await Promise.all([
+    const [items, placements, shapes] = await Promise.all([
         fetchDb("INVENTORY_ITEM"),
         fetchDb("PLACEMENT"),
+        fetchDb("SHAPE"),
     ]);
 
     const results = await Promise.allSettled([
         ...items.map((item) => deleteDbById("INVENTORY_ITEM", item.id)),
         ...placements.map((placement) => deleteDbById("PLACEMENT", placement.id)),
+        ...shapes.map((shape) => putDbById("SHAPE", shape.id, {...shape, base_value: 0,})),
     ]);
 
     const failed = results.filter((result) => result.status === "rejected");
 
     if (failed.length > 0)
     {
-        throw new Error(`${failed.length} item(s) could not be deleted while clearing the game`);
+        throw new Error(`${failed.length} item(s) could not be reset while clearing the game`);
     }
 }
 
