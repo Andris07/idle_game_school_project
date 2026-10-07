@@ -77,8 +77,6 @@ shapeChestButton.addEventListener("click", async () =>
 
         shouldRefund = false;
         await refreshInventory();
-
-        showResult("Shape Chest", [`You got a ${shape.name.toUpperCase()} shape.`, `Value: ${value} $`]);
     }
     catch (error)
     {
