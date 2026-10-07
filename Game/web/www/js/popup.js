@@ -1,8 +1,11 @@
-import { saveGameSession, clearGameSession, generatePlayGrid } from "./game.js";
 import { fetchDb } from "./data.js";
 
-export function showGridPopup()
+// onStart(difficulty) is called when the user clicks the start button in the popup, no need for GET requests here, the difficulty is already known
+export function showGridPopup(onStart)
 {
+    // no multiple popups at the same time
+    if (document.querySelector("#popup-overlay")) return;
+
     const overlay = document.createElement("div");
     overlay.id = "popup-overlay";
 
@@ -15,48 +18,58 @@ export function showGridPopup()
     const select = document.createElement("select");
     select.id = "grid-size-select";
 
-    let loadedDifficulties = null;
-
-    // loading DIFFICULTY
-    fetchDb("DIFFICULTY").then(difficulties =>
-    {
-        loadedDifficulties = difficulties;
-
-        difficulties.forEach(diff =>
-        {
-            const option = document.createElement("option");
-            option.value = diff.id;
-            option.textContent = `${diff.name} (${diff.grid_size}×${diff.grid_size})`;
-            select.appendChild(option);
-        });
-    });
-
     const startButton = document.createElement("button");
     startButton.id = "start-game-button";
+    startButton.type = "button";
     startButton.textContent = "start game";
+    startButton.disabled = true; // while the difficulties are being loaded, the button is disabled to prevent starting a game without a difficulty
+
+    let difficulties = [];
+
+    fetchDb("DIFFICULTY")
+        .then((loaded) =>
+        {
+            difficulties = loaded;
+
+            difficulties.forEach((diff) =>
+            {
+                const option = document.createElement("option");
+                option.value = diff.id;
+                option.textContent = `${diff.name} (${diff.grid_size}×${diff.grid_size})`;
+                select.appendChild(option);
+            });
+
+            startButton.disabled = difficulties.length === 0;
+        })
+        .catch((error) =>
+        {
+            console.error("Could not load difficulties: ", error);
+            title.textContent = "server unreachable";
+        });
 
     startButton.addEventListener("click", async () =>
     {
-        // if DIFFICULTY is not loaded → don't allow the user to start the game
-        if (!loadedDifficulties)
-        {
-            console.error("Difficulty list not loaded yet");
-            return;
-        }
-
-        const difficulty_id = select.value;
-        const difficulty = loadedDifficulties.find(d => d.id == difficulty_id);
+        const difficulty = difficulties.find((d) => String(d.id) === select.value);
 
         if (!difficulty)
         {
-            console.error("Difficulty not found for id: ", difficulty_id);
+            console.error("Difficulty not found for id: ", select.value);
             return;
         }
 
-        await saveGameSession(difficulty_id);
+        // against double clicks, the button is disabled immediately after the first click, and re-enabled only if starting the game fails
+        startButton.disabled = true;
 
-        overlay.remove();
-        generatePlayGrid(difficulty.grid_size);
+        try
+        {
+            await onStart(difficulty);
+            overlay.remove();
+        }
+        catch (error)
+        {
+            console.error("Could not start game: ", error);
+            startButton.disabled = false;
+        }
     });
 
     popup.append(title, select, startButton);
@@ -64,24 +77,23 @@ export function showGridPopup()
     document.body.appendChild(overlay);
 }
 
-export function addNewGameButton()
+export function addNewGameButton(onClick)
 {
     const menu = document.querySelector(".menu-theme");
 
     const btn = document.createElement("button");
     btn.id = "new-game-button";
     btn.className = "theme-toggle";
+    btn.type = "button";
+    btn.setAttribute("aria-label", "New game");
 
     const icon = document.createElement("img");
     icon.src = "./src/restart.svg";
     icon.className = "restart-icon";
+    icon.alt = "";
 
     btn.appendChild(icon);
     menu.prepend(btn);
 
-    btn.addEventListener("click", async () =>
-    {
-        await clearGameSession();
-        showGridPopup();
-    });
+    btn.addEventListener("click", onClick);
 }

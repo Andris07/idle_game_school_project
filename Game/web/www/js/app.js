@@ -1,168 +1,207 @@
 import { fetchDb, postDb, putDbById } from "./data.js";
 import { addMoney, spendMoney } from "./money.js";
 
-let tetrisShapes = [];
-let nextInventoryId = 0;
+const MAX_INVENTORY_ITEMS = 8;
+const SHAPE_CHEST_COST = 100;
+
 const inventoryElement = document.querySelector("#inventory");
-const inventory = [];
 const shapeChestButton = document.querySelector("#shape-chest-button");
-const maxInventoryItems = 8;
-const shapeChestCost = 100;
+
+let tetrisShapesPromise = null;
+let inventory = [];
+let refreshToken = 0;
+
+shapeChestButton.textContent = `${SHAPE_CHEST_COST} $`;
+
+// loading shapes from the database is done only once, and the result is cached in tetrisShapesPromise
+function loadShapes()
+{
+    tetrisShapesPromise ??= fetchDb("SHAPE").catch((error) =>
+    {
+        tetrisShapesPromise = null; // if the request fails, we want to be able to retry it later
+        console.error("Could not load shapes: ", error);
+        throw error;
+    });
+
+    return tetrisShapesPromise;
+}
+
+function updateChestButton()
+{
+    shapeChestButton.disabled = inventory.length >= MAX_INVENTORY_ITEMS;
+}
+
+// placement.js reads from this instead of the DOM
+export function getInventoryItem(inventoryItemId)
+{
+    const shape = inventory.find((item) => String(item.inventoryItemId) === String(inventoryItemId));
+
+    if (!shape) return null;
+
+    return {
+        inventoryItemId: shape.inventoryItemId,
+        shapeId: shape.id,
+        value: Number(shape.value),
+        cells: shape.cells,
+    };
+}
 
 export async function refreshInventory()
 {
-	const items = await fetchDb("INVENTORY_ITEM");
-	nextInventoryId = items.reduce((maxId, item) => Math.max(maxId, Number(item.id) || 0), -1) + 1;
+    const token = ++refreshToken;
+    const [shapes, items] = await Promise.all([loadShapes(), fetchDb("INVENTORY_ITEM")]);
 
-	const shapesInInventory = items.map((item) =>
-	{
-		const shape = tetrisShapes.find((shape) => Number(shape.id) === Number(item.shape_id));
+    // check if the token is still valid, if not, we don't want to update the inventory with stale data
+    if (token !== refreshToken) return;
 
-		return shape ?
-		{
-			...shape,
-			value: item.value,
-			inventoryItemId: item.id,
-			cells: item.cells ?? shape.cells,
-		} : null;
-	}).filter(Boolean);
+    inventory = items.map((item) =>
+    {
+        const shape = shapes.find((s) => String(s.id) === String(item.shape_id));
 
-	inventory.splice(0, inventory.length, ...shapesInInventory);
-	fillInventory();
-	shapeChestButton.disabled = inventory.length >= maxInventoryItems;
+        return shape ?
+        {
+            ...shape,
+            value: item.value,
+            inventoryItemId: item.id,
+            cells: item.cells ?? shape.cells,
+        } : null;
+    }).filter(Boolean);
+
+    fillInventory();
+    updateChestButton();
 }
 
-Promise.all([fetchDb("SHAPE"), fetchDb("INVENTORY_ITEM")])
-	.then(([shapes]) =>
-	{
-		tetrisShapes = shapes;
-		return refreshInventory();
-	})
-	.catch((error) =>
-	{
-		console.error("Could not load inventory: ", error);
-	});
+refreshInventory().catch((error) =>
+{
+    console.error("Could not load inventory: ", error);
+});
 
 function fillInventory()
 {
-	inventoryElement.replaceChildren();
+    inventoryElement.replaceChildren();
 
-	inventory.forEach((shape) =>
-	{
-		const item = document.createElement("div");
-		item.className = "inventory-item";
-		item.setAttribute("aria-label", `${shape.name} shape`);
-		item.dataset.inventoryItemId = shape.inventoryItemId;
-		item.dataset.shapeId = shape.id;
-		item.dataset.value = shape.value;
-		item.dataset.cells = JSON.stringify(shape.cells);
+    inventory.forEach((shape) =>
+    {
+        const item = document.createElement("div");
+        item.className = "inventory-item";
+        item.setAttribute("aria-label", `${shape.name} shape`);
+        item.dataset.inventoryItemId = shape.inventoryItemId;
 
-		const grid = document.createElement("div");
-		grid.className = "shape-grid";
-		const filledCells = new Set(shape.cells.map(([column, row]) => `${column},${row}`));
+        const grid = document.createElement("div");
+        grid.className = "shape-grid";
+        const filledCells = new Set(shape.cells.map(([column, row]) => `${column},${row}`));
 
-		for (let row = 0; row < 4; row += 1)
-		{
-			for (let column = 0; column < 4; column += 1)
-			{
-				const cell = document.createElement("div");
-				cell.className = "shape-cell";
+        for (let row = 0; row < 4; row += 1)
+        {
+            for (let column = 0; column < 4; column += 1)
+            {
+                const cell = document.createElement("div");
+                cell.className = "shape-cell";
 
-				if (filledCells.has(`${column},${row}`))
-				{
-					cell.classList.add("shape-cell-filled");
-				}
-				grid.appendChild(cell);
-			}
-		}
+                if (filledCells.has(`${column},${row}`))
+                {
+                    cell.classList.add("shape-cell-filled");
+                }
+                grid.appendChild(cell);
+            }
+        }
 
-		const value = document.createElement("p");
-		value.textContent = `${shape.value}$`;
+        const value = document.createElement("p");
+        value.textContent = `${shape.value}$`;
 
-		const rotateButton = document.createElement("button");
-		rotateButton.className = "rotate-shape-button";
-		rotateButton.type = "button";
-		rotateButton.setAttribute("aria-label", `Rotate ${shape.name} shape`);
+        const rotateButton = document.createElement("button");
+        rotateButton.className = "rotate-shape-button";
+        rotateButton.type = "button";
+        rotateButton.setAttribute("aria-label", `Rotate ${shape.name} shape`);
 
-		const rotateIcon = document.createElement("img");
-		rotateIcon.className = "rotate-icon";
-		rotateIcon.src = "./src/rotate.svg";
-		rotateIcon.alt = "";
-		rotateButton.appendChild(rotateIcon);
+        const rotateIcon = document.createElement("img");
+        rotateIcon.className = "rotate-icon";
+        rotateIcon.src = "./src/rotate.svg";
+        rotateIcon.alt = "";
+        rotateButton.appendChild(rotateIcon);
 
-		rotateButton.addEventListener("click", async () =>
-		{
-			rotateButton.disabled = true;
-			const rotatedCells = shape.cells.map(([column, row]) => [3 - row, column]);
+        rotateButton.addEventListener("click", async () =>
+        {
+            rotateButton.disabled = true;
+            const rotatedCells = shape.cells.map(([column, row]) => [3 - row, column]);
 
-			try
-			{
-				await putDbById("INVENTORY_ITEM", shape.inventoryItemId,
-				{
-					id: shape.inventoryItemId,
-					shape_id: shape.id,
-					value: shape.value,
-					cells: rotatedCells,
-				});
+            try
+            {
+                await putDbById("INVENTORY_ITEM", shape.inventoryItemId,
+                {
+                    id: shape.inventoryItemId,
+                    shape_id: shape.id,
+                    value: shape.value,
+                    cells: rotatedCells,
+                });
 
-				shape.cells = rotatedCells;
-				fillInventory();
-			}
-			catch (error)
-			{
-				console.error("Could not rotate inventory item: ", error);
-				rotateButton.disabled = false;
-			}
-		});
+                shape.cells = rotatedCells;
+                fillInventory();
+            }
+            catch (error)
+            {
+                console.error("Could not rotate inventory item: ", error);
+                rotateButton.disabled = false;
+            }
+        });
 
-		item.append(grid, value, rotateButton);
-		inventoryElement.appendChild(item);
-	});
+        item.append(grid, value, rotateButton);
+        inventoryElement.appendChild(item);
+    });
 }
 
 shapeChestButton.addEventListener("click", async () =>
 {
-	const shape = tetrisShapes[Math.floor(Math.random() * tetrisShapes.length)];
-	shapeChestButton.disabled = true;
+    if (inventory.length >= MAX_INVENTORY_ITEMS)
+    {
+        alert("Inventory is full! Please remove an item before adding a new one.");
+        return;
+    }
 
-	if (inventory.length >= maxInventoryItems)
-	{
-		alert("Inventory is full! Please remove an item before adding a new one.");
-		shapeChestButton.disabled = false;
-		return;
-	}
+    shapeChestButton.disabled = true;
+    let shouldRefund = false;
 
-	let shouldRefund = false;
+    try
+    {
+        const shapes = await loadShapes();
+        const shape = shapes[Math.floor(Math.random() * shapes.length)];
 
-	try
-	{
-		if (!await spendMoney(shapeChestCost))
-		{
-			alert(`You need ${shapeChestCost} $ to open this chest.`);
-			return;
-		}
+        if (!await spendMoney(SHAPE_CHEST_COST))
+        {
+            alert(`You need ${SHAPE_CHEST_COST} $ to open this chest.`);
+            return;
+        }
 
-		shouldRefund = true;
-		await postDb("INVENTORY_ITEM",
-		{
-			id: nextInventoryId,
-			shape_id: shape.id,
-			value: 5 + Math.floor(Math.random() * 5) + 1,
-		});
-		shouldRefund = false;
-		await refreshInventory();
-	}
-	catch (error)
-	{
-		if (shouldRefund)
-		{
-			await addMoney(shapeChestCost);
-		}
+        shouldRefund = true;
 
-		console.error("Could not save inventory item: ", error);
-	}
-	finally
-	{
-		shapeChestButton.disabled = inventory.length >= maxInventoryItems;
-	}
+        // id is generated by the database, so we don't need to calculate it here
+        await postDb("INVENTORY_ITEM",
+        {
+            shape_id: shape.id,
+            value: 5 + Math.floor(Math.random() * 5) + 1,
+        });
+
+        shouldRefund = false;
+        await refreshInventory();
+    }
+    catch (error)
+    {
+        console.error("Could not save inventory item: ", error);
+
+        if (shouldRefund)
+        {
+            try
+            {
+                await addMoney(SHAPE_CHEST_COST);
+            }
+            catch (refundError)
+            {
+                console.error("Could not refund chest cost: ", refundError);
+            }
+        }
+    }
+    finally
+    {
+        updateChestButton();
+    }
 });

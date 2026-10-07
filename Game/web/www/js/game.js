@@ -1,8 +1,19 @@
-import { BASE_URL, fetchDb, postDb, putDb, deleteDbById } from "./data.js";
+import { fetchDb, putDb, deleteDbById } from "./data.js";
 import { showGridPopup, addNewGameButton } from "./popup.js";
-import { startMoneySystem, stopMoneySystem } from "./money.js";
+import { startMoneySystem, stopMoneySystem, waitForPendingSaves } from "./money.js";
+import { refreshInventory } from "./app.js";
+import { loadPlacements, resetPlacements } from "./placement.js";
+
+const STARTING_MONEY = 100;
 
 const playgrid = document.querySelector("#playgrid");
+
+let isRestarting = false;
+
+function createSession(difficulty_id = null, money = 0)
+{
+    return { id: "0", difficulty_id, money, last_save_at: "" };
+}
 
 export async function loadGameSession()
 {
@@ -14,20 +25,14 @@ export async function loadGameSession()
     }
 
     const difficulties = await fetchDb("DIFFICULTY");
-    const difficulty = difficulties.find(d => d.id === session.difficulty_id);
+    const difficulty = difficulties.find((d) => String(d.id) === String(session.difficulty_id));
 
     return difficulty?.grid_size || null;
 }
 
 export async function saveGameSession(difficulty_id)
 {
-    await putDb("GAME_SESSION",
-    {
-        id: "0",
-        difficulty_id,
-        money: 100,
-        last_save_at: "",
-    });
+    await putDb("GAME_SESSION", createSession(difficulty_id, STARTING_MONEY));
 
     await startMoneySystem();
 }
@@ -35,22 +40,26 @@ export async function saveGameSession(difficulty_id)
 export async function clearGameSession()
 {
     stopMoneySystem();
+    await waitForPendingSaves();
 
-    await putDb("GAME_SESSION",
+    await putDb("GAME_SESSION", createSession());
+
+    const [items, placements] = await Promise.all([
+        fetchDb("INVENTORY_ITEM"),
+        fetchDb("PLACEMENT"),
+    ]);
+
+    const results = await Promise.allSettled([
+        ...items.map((item) => deleteDbById("INVENTORY_ITEM", item.id)),
+        ...placements.map((placement) => deleteDbById("PLACEMENT", placement.id)),
+    ]);
+
+    const failed = results.filter((result) => result.status === "rejected");
+
+    if (failed.length > 0)
     {
-        id: "0",
-        difficulty_id: null,
-        money: 0,
-        last_save_at: ""
-    });
-
-    const items = await fetchDb("INVENTORY_ITEM");
-
-    await Promise.all(items.map(item => deleteDbById("INVENTORY_ITEM", item.id)));
-
-    const placements = await fetchDb("PLACEMENT");
-
-    await Promise.all(placements.map(placement => deleteDbById("PLACEMENT", placement.id)));
+        throw new Error(`${failed.length} item(s) could not be deleted while clearing the game`);
+    }
 }
 
 export function generatePlayGrid(size)
@@ -75,19 +84,64 @@ export function generatePlayGrid(size)
     playgrid.appendChild(grid);
 }
 
+async function startGame(difficulty)
+{
+    await saveGameSession(difficulty.id);
+    generatePlayGrid(difficulty.grid_size);
+    await loadPlacements();
+}
+
+async function restartGame()
+{
+    if (isRestarting) return;
+    isRestarting = true;
+
+    try
+    {
+        await clearGameSession();
+    }
+    catch (error)
+    {
+        console.error("Could not clear game session: ", error);
+    }
+
+    // old data should not be displayed while the new game is being set up, so we clear the grid and reset placements
+    playgrid.replaceChildren();
+    resetPlacements();
+
+    try
+    {
+        await refreshInventory();
+    }
+    catch (error)
+    {
+        console.error("Could not refresh inventory: ", error);
+    }
+
+    isRestarting = false;
+    showGridPopup(startGame);
+}
+
 (async function initGame()
 {
-    addNewGameButton();
+    addNewGameButton(restartGame);
 
-    const size = await loadGameSession();
+    try
+    {
+        const size = await loadGameSession();
 
-    if (!size)
-    {
-        showGridPopup();
-    }
-    else
-    {
+        if (!size)
+        {
+            showGridPopup(startGame);
+            return;
+        }
+
         await startMoneySystem();
         generatePlayGrid(size);
+        await loadPlacements();
+    }
+    catch (error)
+    {
+        console.error("Could not start game: ", error);
     }
 })();
