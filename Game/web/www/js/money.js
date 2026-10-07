@@ -10,7 +10,9 @@ let saveQueue = Promise.resolve();
 
 function renderMoney()
 {
-    playerMoneyElement.textContent = `${money.toLocaleString(undefined, { maximumFractionDigits: 2 })} $`;
+    const formattedMoney = money.toLocaleString(undefined, { maximumFractionDigits: 2 });
+    const formattedIncome = passiveIncome.toLocaleString(undefined, { maximumFractionDigits: 2 });
+    playerMoneyElement.textContent = `${formattedMoney} $ | +${formattedIncome} $/s`;
 }
 
 function persistMoney(keepalive = false)
@@ -99,6 +101,7 @@ export async function refreshPassiveIncome()
     passiveIncome = Array.isArray(placements)
         ? placements.reduce((total, placement) => total + (Number(placement.value) || 0), 0)
         : 0;
+    renderMoney();
 }
 
 window.addEventListener("pagehide", () =>
