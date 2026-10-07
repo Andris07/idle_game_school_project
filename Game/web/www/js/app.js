@@ -178,7 +178,7 @@ shapeChestButton.addEventListener("click", async () =>
         await postDb("INVENTORY_ITEM",
         {
             shape_id: shape.id,
-            value: 5 + Math.floor(Math.random() * 5) + 1,
+            value: shape.base_value + (5 + Math.floor(Math.random() * 5) + 1),
         });
 
         shouldRefund = false;
