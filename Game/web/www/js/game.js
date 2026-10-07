@@ -25,7 +25,7 @@ export async function saveGameSession(difficulty_id)
     {
         id: "0",
         difficulty_id,
-        money: 0,
+        money: 100,
         last_save_at: "",
     });
 

@@ -1,4 +1,5 @@
 import { fetchDb, postDb, putDbById } from "./data.js";
+import { addMoney, spendMoney } from "./money.js";
 
 let tetrisShapes = [];
 let nextInventoryId = 0;
@@ -6,6 +7,7 @@ const inventoryElement = document.querySelector("#inventory");
 const inventory = [];
 const shapeChestButton = document.querySelector("#shape-chest-button");
 const maxInventoryItems = 8;
+const shapeChestCost = 100;
 
 export async function refreshInventory()
 {
@@ -130,18 +132,33 @@ shapeChestButton.addEventListener("click", async () =>
 		return;
 	}
 
+	let shouldRefund = false;
+
 	try
 	{
+		if (!await spendMoney(shapeChestCost))
+		{
+			alert(`You need ${shapeChestCost} $ to open this chest.`);
+			return;
+		}
+
+		shouldRefund = true;
 		await postDb("INVENTORY_ITEM",
 		{
 			id: nextInventoryId,
 			shape_id: shape.id,
 			value: 5 + Math.floor(Math.random() * 5),
 		});
+		shouldRefund = false;
 		await refreshInventory();
 	}
 	catch (error)
 	{
+		if (shouldRefund)
+		{
+			await addMoney(shapeChestCost);
+		}
+
 		console.error("Could not save inventory item: ", error);
 	}
 	finally

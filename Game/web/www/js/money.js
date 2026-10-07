@@ -93,6 +93,28 @@ export async function addMoney(amount)
 
     money = Math.max(0, money + value);
     renderMoney();
+    await persistMoney();
+}
+
+export async function spendMoney(amount)
+{
+    const cost = Number(amount);
+    if (!gameSession || !Number.isFinite(cost) || cost <= 0 || money < cost) return false;
+
+    money -= cost;
+    renderMoney();
+
+    try
+    {
+        await persistMoney();
+        return true;
+    }
+    catch (error)
+    {
+        money += cost;
+        renderMoney();
+        throw error;
+    }
 }
 
 export async function refreshPassiveIncome()
