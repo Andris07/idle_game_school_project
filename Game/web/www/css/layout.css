@@ -147,14 +147,6 @@ footer
     gap: 10px;
 }
 
-.theme-icon
-{
-    width: 22px;
-    height: 22px;
-
-    display: block;
-}
-
 .theme-toggle
 {
     width: 42px;

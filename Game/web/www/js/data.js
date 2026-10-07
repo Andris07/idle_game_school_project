@@ -1,70 +1,33 @@
-export const BASE_URL = "http://localhost:3000";
+export const BASE_URL = `${location.protocol}//${location.hostname}:3000`;
 
-export async function fetchDb(dbName)
+async function request(method, path, body, { keepalive = false } = {})
 {
-    const fetchDb = await fetch(`${BASE_URL}/${dbName}`,
-    {
-        method: "GET",
-        headers:
-        {
-            "Accept": "application/json"
-        }
-    });
-    return await fetchDb.json();
-}
+    const hasBody = body !== undefined;
 
-export async function postDb(dbName, data)
-{
-    const postDb = await fetch(`${BASE_URL}/${dbName}`,
+    const response = await fetch(`${BASE_URL}/${path}`,
     {
-        method: "POST",
+        method,
+        keepalive,
+        cache: "no-store",
         headers:
         {
             Accept: "application/json",
-            "Content-Type": "application/json"
+            ...(hasBody && { "Content-Type": "application/json" })
         },
-        body: JSON.stringify(data)
+        body: hasBody ? JSON.stringify(body) : undefined
     });
-    return await postDb.json();
+
+    if (!response.ok)
+    {
+        throw new Error(`${method} /${path} -> ${response.status} ${response.statusText}`);
+    }
+
+    const text = await response.text();
+    return text ? JSON.parse(text) : null;
 }
 
-export async function putDb(dbName, data, options = {})
-{
-    const putDb = await fetch(`${BASE_URL}/${dbName}`,
-    {
-        method: "PUT",
-        keepalive: options.keepalive ?? false,
-        headers:
-        {
-            "Accept": "application/json",
-            "Content-Type": "application/json"
-        },
-        body: JSON.stringify(data)
-    });
-    return await putDb.json();
-}
-
-export async function putDbById(dbName, id, data)
-{
-    const response = await fetch(`${BASE_URL}/${dbName}/${id}`,
-    {
-        method: "PUT",
-        headers:
-        {
-            "Accept": "application/json",
-            "Content-Type": "application/json"
-        },
-        body: JSON.stringify(data)
-    });
-    return await response.json();
-}
-
-export async function deleteDbById(dbName, id)
-{
-    const deleteDb = await fetch(`${BASE_URL}/${dbName}/${id}`,
-    {
-        method: "DELETE",
-        headers: { "Accept": "application/json" }
-    });
-    return deleteDb.ok;
-}
+export const fetchDb = (dbName) => request("GET", dbName);
+export const postDb = (dbName, data) => request("POST", dbName, data);
+export const putDb = (dbName, data, options) => request("PUT", dbName, data, options);
+export const putDbById = (dbName, id, data) => request("PUT", `${dbName}/${id}`, data);
+export const deleteDbById = (dbName, id) => request("DELETE", `${dbName}/${id}`);

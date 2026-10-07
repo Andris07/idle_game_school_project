@@ -1,6 +1,6 @@
 import { fetchDb, postDb, putDbById, deleteDbById } from "./data.js";
-import { refreshInventory } from "./app.js";
-import { addMoney, refreshPassiveIncome } from "./money.js";
+import { refreshInventory, getInventoryItem } from "./app.js";
+import { addMoney, updatePassiveIncome } from "./money.js";
 
 const SHAPE_SIZE = 4;
 const DRAG_START_DISTANCE = 4;
@@ -12,7 +12,6 @@ const playgridElement = document.querySelector("#playgrid");
 
 let placements = [];
 let occupied = new Map();
-let nextPlacementId = 0;
 let boardLoadToken = 0;
 let previewCells = [];
 let drag = null;
@@ -92,53 +91,33 @@ function getCompletedLines(board, absoluteCells)
     const newCells = new Set(absoluteCells.map(([column, row]) => cellKey(column, row)));
     const isOccupied = (column, row) =>
         occupied.has(cellKey(column, row)) || newCells.has(cellKey(column, row));
-    const completedRows = [];
-    const completedColumns = [];
+    const indices = Array.from({ length: board.size }, (_, index) => index);
 
-    for (let index = 0; index < board.size; index += 1)
-    {
-        if (Array.from({ length: board.size }, (_, column) => isOccupied(column, index)).every(Boolean))
-        {
-            completedRows.push(index);
-        }
+    return {
+        rows: indices.filter((row) => indices.every((column) => isOccupied(column, row))),
+        columns: indices.filter((column) => indices.every((row) => isOccupied(column, row))),
+    };
+}
 
-        if (Array.from({ length: board.size }, (_, row) => isOccupied(index, row)).every(Boolean))
-        {
-            completedColumns.push(index);
-        }
-    }
+// row/column reward is the sum of the values of all shapes that have at least one cell in the row/column, multiplied by the number of shapes that have at least one cell in the row/column
+function getLineReward(isInLine)
+{
+    const shapes = placements.filter((placement) =>
+        placement.cells.some(([column, row]) =>
+            isInLine(Number(placement.x_coord) + column, Number(placement.y_coord) + row)));
 
-    return { rows: completedRows, columns: completedColumns };
+    const totalValue = shapes.reduce((total, placement) => total + (Number(placement.value) || 0), 0);
+
+    return totalValue * shapes.length;
 }
 
 function getCompletedLineReward(completedLines, boardSize)
 {
-    const getLineReward = (touchesLine) =>
-    {
-        const shapesInLine = new Map();
-
-        for (const placement of placements)
-        {
-            if (placement.cells.some(([column, row]) => touchesLine(placement, column, row)))
-            {
-                shapesInLine.set(placement.id ?? placement, placement);
-            }
-        }
-
-        const shapes = Array.from(shapesInLine.values());
-        const totalValue = shapes.reduce((total, placement) => total + (Number(placement.value) || 0), 0);
-        return totalValue * shapes.length;
-    };
+    const inBoard = (value) => value >= 0 && value < boardSize;
 
     const lineRewards = [
-        ...completedLines.rows.map((row) => getLineReward((placement, column, localRow) =>
-            Number(placement.y_coord) + localRow === row
-            && Number(placement.x_coord) + column >= 0
-            && Number(placement.x_coord) + column < boardSize)),
-        ...completedLines.columns.map((column) => getLineReward((placement, localColumn, row) =>
-            Number(placement.x_coord) + localColumn === column
-            && Number(placement.y_coord) + row >= 0
-            && Number(placement.y_coord) + row < boardSize)),
+        ...completedLines.rows.map((line) => getLineReward((x, y) => y === line && inBoard(x))),
+        ...completedLines.columns.map((line) => getLineReward((x, y) => x === line && inBoard(y))),
     ];
 
     if (lineRewards.length === 0) return 0;
@@ -153,39 +132,36 @@ async function clearCompletedLines(completedLines)
 {
     const rows = new Set(completedLines.rows);
     const columns = new Set(completedLines.columns);
-    const updatedPlacements = [];
+    const operations = [];
 
     for (const placement of placements)
     {
         const remainingCells = placement.cells.filter(([column, row]) =>
-        {
-            const absoluteColumn = Number(placement.x_coord) + column;
-            const absoluteRow = Number(placement.y_coord) + row;
+            !rows.has(Number(placement.y_coord) + row)
+            && !columns.has(Number(placement.x_coord) + column));
 
-            return !rows.has(absoluteRow) && !columns.has(absoluteColumn);
-        });
+        if (remainingCells.length === placement.cells.length) continue;
 
-        if (remainingCells.length === placement.cells.length)
-        {
-            updatedPlacements.push(placement);
-            continue;
-        }
-
-        if (remainingCells.length === 0)
-        {
-            const removed = await deleteDbById("PLACEMENT", placement.id);
-
-            if (!removed) throw new Error(`Could not clear placement ${placement.id}`);
-        }
-        else
-        {
-            const updated = { ...placement, cells: remainingCells };
-            await putDbById("PLACEMENT", placement.id, updated);
-            updatedPlacements.push(updated);
-        }
+        operations.push(remainingCells.length === 0
+            ? deleteDbById("PLACEMENT", placement.id)
+            : putDbById("PLACEMENT", placement.id, { ...placement, cells: remainingCells }));
     }
 
-    placements = updatedPlacements;
+    if (operations.length === 0)
+    {
+        renderPlacements();
+        return;
+    }
+
+    // a failed placement can't mess up the game state, because we always reload placements from the server after placing a shape, so we can just log the error and continue
+    const results = await Promise.allSettled(operations);
+
+    if (results.some((result) => result.status === "rejected"))
+    {
+        console.error("Some placements could not be cleared: ", results);
+    }
+
+    await loadPlacements();
 }
 
 function isValidPlacement(placement)
@@ -225,60 +201,32 @@ function renderPlacements()
     });
 }
 
-async function loadPlacements()
+export function resetPlacements()
+{
+    boardLoadToken += 1;
+    placements = [];
+    occupied = new Map();
+}
+
+// server state is the source of truth, so we always reload placements from the server when starting a new game or after placing a shape
+export async function loadPlacements()
 {
     const token = ++boardLoadToken;
-    let rawPlacements = [];
-
-    try
-    {
-        rawPlacements = await fetchDb("PLACEMENT");
-    }
-    catch (error)
-    {
-        console.error("Could not load placements: ", error);
-    }
+    const rawPlacements = await fetchDb("PLACEMENT");
 
     if (token !== boardLoadToken) return;
 
-    if (!Array.isArray(rawPlacements))
-    {
-        rawPlacements = [];
-    }
-
-    nextPlacementId = rawPlacements.reduce((maxId, placement) => Math.max(maxId, Number(placement?.id) || 0), -1) + 1;
-
-    placements = rawPlacements.filter(isValidPlacement);
+    placements = Array.isArray(rawPlacements) ? rawPlacements.filter(isValidPlacement) : [];
     renderPlacements();
 }
 
-new MutationObserver(() =>
-{
-    if (getBoard()) loadPlacements();
-}).observe(playgridElement, { childList: true });
-
-if (getBoard()) loadPlacements();
-
 function readInventoryItem(itemElement)
 {
-    try
-    {
-        const cells = JSON.parse(itemElement.dataset.cells);
-        const inventoryItemId = itemElement.dataset.inventoryItemId;
+    const inventoryItemId = itemElement.dataset.inventoryItemId;
 
-        if (!Array.isArray(cells) || inventoryItemId === undefined) return null;
+    if (inventoryItemId === undefined) return null;
 
-        return {
-            inventoryItemId,
-            shapeId: itemElement.dataset.shapeId,
-            value: Number(itemElement.dataset.value),
-            cells,
-        };
-    }
-    catch (error)
-    {
-        return null;
-    }
+    return getInventoryItem(inventoryItemId);
 }
 
 inventoryElement.addEventListener("pointerdown", (event) =>
@@ -503,6 +451,9 @@ async function dropOnBoard(data, target)
 
     try
     {
+        // before placing a shape, we need to make sure we have the latest placements from the server, otherwise we might place a shape on top of another one that was placed by another client
+        await loadPlacements();
+
         const board = getBoard();
 
         if (!board) return;
@@ -513,53 +464,36 @@ async function dropOnBoard(data, target)
 
         const completedLines = getCompletedLines(board, absoluteCells);
 
-        const placement =
+        // generating id is done by the server, so we don't need to generate it on the client side (otherwise possible errors could lead to unmatching ids between client and server)
+        savedPlacement = await postDb("PLACEMENT",
         {
-            id: nextPlacementId,
             shape_id: data.shapeId,
             value: data.value,
             cells: data.cells,
             x_coord: target.originColumn,
             y_coord: target.originRow,
-        };
+        });
 
-        const saved = await postDb("PLACEMENT", placement);
-
-        if (!saved || saved.id === undefined)
+        if (!savedPlacement || savedPlacement.id === undefined)
         {
             throw new Error("PLACEMENT was not saved");
         }
 
-        savedPlacement = saved;
+        await deleteDbById("INVENTORY_ITEM", data.inventoryItemId);
 
-        const removed = await deleteDbById("INVENTORY_ITEM", data.inventoryItemId);
-
-        if (!removed)
-        {
-            throw new Error("INVENTORY_ITEM was not removed");
-        }
-
-        placements.push(placement);
-        nextPlacementId += 1;
+        placements.push(savedPlacement);
         savedPlacement = null;
 
+        // calculating the reward before clearing the lines, because clearCompletedLines() will modify placements
         const lineReward = getCompletedLineReward(completedLines, board.size);
+
+        await clearCompletedLines(completedLines);
+        updatePassiveIncome(placements);
+
         if (lineReward > 0)
         {
             await addMoney(lineReward);
         }
-
-        try
-        {
-            await clearCompletedLines(completedLines);
-        }
-        catch (error)
-        {
-            console.error("Could not clear completed lines: ", error);
-        }
-
-        renderPlacements();
-        await refreshPassiveIncome();
     }
     catch (error)
     {
@@ -575,6 +509,16 @@ async function dropOnBoard(data, target)
             {
                 console.error("Could not roll back placement: ", rollbackError);
             }
+        }
+
+        // display server state to the user, so they can try again with the correct data
+        try
+        {
+            await loadPlacements();
+        }
+        catch (reloadError)
+        {
+            console.error("Could not reload placements: ", reloadError);
         }
     }
     finally
