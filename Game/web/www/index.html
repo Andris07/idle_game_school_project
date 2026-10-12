@@ -32,16 +32,11 @@
 
         <!-- CENTER: Game information -->
         <div class="menu-section menu-info">
-            <!--
-                Placeholder for future information.
-                Examples:
-                - QTE type
-                - QTE timer
-                - money
-            -->
-
+            <!-- icon of the running quick time event + remaining time + money -->
             <div class="game-info">
-                <span id="game-timer" class="game-info-item">
+                <img id="event-icon" class="event-icon" alt="" hidden>
+
+                <span id="game-timer" class="game-info-item" aria-label="Remaining time of the quick time event">
                     --:--
                 </span>
 
@@ -87,7 +82,7 @@
                         <img src="./src/buff_chest.png" alt="Buff Chest" title="Buff Chest">
                     </div>
                     <div class="chest-button">
-                        <button class="buy-button" type="button">5000 $</button>
+                        <button id="buff-chest-button" class="buy-button" type="button">5000 $</button>
                     </div>
                 </div>
             </div>
