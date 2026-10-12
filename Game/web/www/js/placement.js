@@ -1,6 +1,8 @@
 import { fetchDb, postDb, putDbById, deleteDbById } from "./data.js";
 import { refreshInventory, getInventoryItem } from "./app.js";
 import { addMoney, updatePassiveIncome } from "./money.js";
+import { isGridFrozen, getLineRewardMultiplier, onEventEnd } from "./events.js";
+import { showMessagePopup } from "./popup.js";
 
 const SHAPE_SIZE = 4;
 const DRAG_START_DISTANCE = 4;
@@ -16,6 +18,8 @@ let boardLoadToken = 0;
 let previewCells = [];
 let drag = null;
 let isSaving = false;
+let boardLock = Promise.resolve();
+const boardListeners = new Set();
 
 function cellKey(column, row)
 {
@@ -50,6 +54,46 @@ function getBoardMetrics(board)
         pitchX: right.left - first.left,
         pitchY: below.top - first.top,
     };
+}
+
+// used by gameover.js: the size of the board and the occupied cells ("column,row")
+export function getBoardSnapshot()
+{
+    const board = getBoard();
+
+    if (!board) return null;
+
+    return { size: board.size, occupied: new Set(occupied.keys()) };
+}
+
+// listener() is called after the board changed (shape placed, rows cleared), game over is checked there
+export function onBoardChange(listener)
+{
+    boardListeners.add(listener);
+}
+
+function notifyBoardChange()
+{
+    boardListeners.forEach((listener) =>
+    {
+        try
+        {
+            Promise.resolve(listener()).catch((error) => console.error("Board listener failed: ", error));
+        }
+        catch (error)
+        {
+            console.error("Board listener failed: ", error);
+        }
+    });
+}
+
+// placing a shape and paying out the frozen rows must not run at the same time
+function withBoardLock(task)
+{
+    const run = boardLock.then(task, task);
+    boardLock = run.catch(() => {});
+
+    return run;
 }
 
 function getAbsoluteCells(localCells, originColumn, originRow)
@@ -125,7 +169,7 @@ function getCompletedLineReward(completedLines, boardSize)
     const totalReward = lineRewards.reduce((total, reward) => total + reward, 0);
     const comboMultiplier = Math.max(2, 1 + 0.25 * (lineRewards.length - 1));
 
-    return totalReward * comboMultiplier;
+    return totalReward * comboMultiplier * getLineRewardMultiplier();
 }
 
 async function clearCompletedLines(completedLines)
@@ -447,6 +491,30 @@ async function dropOnBoard(data, target)
     if (isSaving) return;
 
     isSaving = true;
+
+    try
+    {
+        await withBoardLock(() => placeShape(data, target));
+    }
+    finally
+    {
+        isSaving = false;
+
+        try
+        {
+            await refreshInventory();
+        }
+        catch (error)
+        {
+            console.error("Could not refresh inventory: ", error);
+        }
+
+        notifyBoardChange();
+    }
+}
+
+async function placeShape(data, target)
+{
     let savedPlacement = null;
 
     try
@@ -483,6 +551,14 @@ async function dropOnBoard(data, target)
 
         placements.push(savedPlacement);
         savedPlacement = null;
+
+        // Time Freeze: the lines stay on the board until the freeze is over, then settleFrozenLines() pays them out together
+        if (isGridFrozen())
+        {
+            renderPlacements();
+            updatePassiveIncome(placements);
+            return;
+        }
 
         // calculating the reward before clearing the lines, because clearCompletedLines() will modify placements
         const lineReward = getCompletedLineReward(completedLines, board.size);
@@ -521,17 +597,53 @@ async function dropOnBoard(data, target)
             console.error("Could not reload placements: ", reloadError);
         }
     }
-    finally
-    {
-        isSaving = false;
+}
 
+// Time Freeze is over: every row and column that was completed during the freeze is paid out as ONE combo and cleared
+async function settleFrozenLines()
+{
+    await withBoardLock(async () =>
+    {
         try
         {
-            await refreshInventory();
+            await loadPlacements();
+
+            const board = getBoard();
+
+            if (!board) return;
+
+            const completedLines = getCompletedLines(board, []);
+            const lineCount = completedLines.rows.length + completedLines.columns.length;
+
+            if (lineCount === 0) return;
+
+            const lineReward = Math.round(getCompletedLineReward(completedLines, board.size));
+
+            await clearCompletedLines(completedLines);
+            updatePassiveIncome(placements);
+
+            if (lineReward > 0) await addMoney(lineReward);
+
+            showMessagePopup("Time Freeze ended",
+            [
+                `${completedLines.rows.length} row(s) and ${completedLines.columns.length} column(s) were completed during the freeze.`,
+            ],
+            false,
+            {
+                icon: "./src/time_freeze.png",
+                highlight: `+${lineReward.toLocaleString()} $`,
+            });
         }
         catch (error)
         {
-            console.error("Could not refresh inventory: ", error);
+            console.error("Could not settle the frozen lines: ", error);
         }
-    }
+    });
+
+    notifyBoardChange();
 }
+
+onEventEnd(async (finished) =>
+{
+    if (finished.name === "time_freeze") await settleFrozenLines();
+});

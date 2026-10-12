@@ -27,6 +27,26 @@ export function isInventoryFull()
     return inventory.length >= MAX_INVENTORY_ITEMS;
 }
 
+// how many more shapes fit into the inventory (Double Shape needs two places)
+export function getFreeInventorySlots()
+{
+    return Math.max(0, MAX_INVENTORY_ITEMS - inventory.length);
+}
+
+// the shapes that are in the inventory right now (gameover.js checks if any of them can still be placed)
+export function getInventoryShapes()
+{
+    return inventory.map((shape) => ({ inventoryItemId: shape.inventoryItemId, shapeId: shape.id, cells: shape.cells }));
+}
+
+// the 7 base shapes, used when the inventory is empty
+export async function getBaseShapes()
+{
+    const shapes = await loadShapes();
+
+    return shapes.map((shape) => ({ shapeId: shape.id, cells: shape.cells }));
+}
+
 // the click handler of the chest is in chests.js, here we only keep the button state in sync with the inventory
 function updateChestButton()
 {

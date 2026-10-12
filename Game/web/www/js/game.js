@@ -2,7 +2,9 @@ import { fetchDb, putDb, putDbById, deleteDbById } from "./data.js";
 import { showGridPopup, addNewGameButton } from "./popup.js";
 import { startMoneySystem, stopMoneySystem, waitForPendingSaves } from "./money.js";
 import { refreshInventory } from "./app.js";
-import { loadPlacements, resetPlacements } from "./placement.js";
+import { loadPlacements, resetPlacements, onBoardChange } from "./placement.js";
+import { restoreEvent, settleExpiredEvent, resetEvents } from "./events.js";
+import { initGameOver, resetGameOver, checkGameOver } from "./gameover.js";
 import "./chests.js";
 
 const STARTING_MONEY = 100;
@@ -13,7 +15,8 @@ let isRestarting = false;
 
 function createSession(difficulty_id = null, money = 0)
 {
-    return { id: "0", difficulty_id, money, last_save_at: "" };
+    // started_at is the start of the game, the game over result shows how long it lasted
+    return { id: "0", difficulty_id, money, last_save_at: "", started_at: difficulty_id == null ? "" : new Date().toISOString() };
 }
 
 export async function loadGameSession()
@@ -42,6 +45,15 @@ export async function clearGameSession()
 {
     stopMoneySystem();
     await waitForPendingSaves();
+
+    try
+    {
+        await resetEvents();
+    }
+    catch (error)
+    {
+        console.error("Could not reset the events: ", error);
+    }
 
     await putDb("GAME_SESSION", createSession());
 
@@ -89,6 +101,7 @@ export function generatePlayGrid(size)
 
 async function startGame(difficulty)
 {
+    resetGameOver();
     await saveGameSession(difficulty.id);
     generatePlayGrid(difficulty.grid_size);
     await loadPlacements();
@@ -98,6 +111,7 @@ async function restartGame()
 {
     if (isRestarting) return;
     isRestarting = true;
+    resetGameOver();
 
     try
     {
@@ -128,6 +142,8 @@ async function restartGame()
 (async function initGame()
 {
     addNewGameButton(restartGame);
+    initGameOver({ onRestart: restartGame });
+    onBoardChange(checkGameOver);
 
     try
     {
@@ -139,9 +155,15 @@ async function restartGame()
             return;
         }
 
+        // the event is loaded before the money system, because the offline income needs to know about a Gold Rush
+        await restoreEvent();
         await startMoneySystem();
         generatePlayGrid(size);
         await loadPlacements();
+
+        // a Time Freeze that ran out while the page was closed is paid out now that the board is ready
+        await settleExpiredEvent();
+        await checkGameOver();
     }
     catch (error)
     {

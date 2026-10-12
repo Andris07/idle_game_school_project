@@ -8,6 +8,7 @@ let passiveIncome = 0;
 let incomeTimer = null;
 let lastTickAt = 0;
 let saveQueue = Promise.resolve();
+let incomeBoost = null; // { multiplier, startsAt, endsAt } while an event (Gold Rush) changes the passive income
 
 function sumPlacementValues(placements)
 {
@@ -16,11 +17,63 @@ function sumPlacementValues(placements)
     return placements.reduce((total, placement) => total + (Number(placement.value) || 0), 0);
 }
 
+export function formatMoney(value)
+{
+    return Number(value).toLocaleString(undefined, { maximumFractionDigits: 2 });
+}
+
+// how many seconds of the boost fall between the two timestamps (the boost has its own start and end)
+function getBoostedSeconds(fromMs, toMs)
+{
+    if (!incomeBoost) return 0;
+
+    const start = Math.max(fromMs, incomeBoost.startsAt);
+    const end = Math.min(toMs, incomeBoost.endsAt);
+
+    return Math.max(0, end - start) / 1000;
+}
+
+// the income of a time range, the boost only counts for the part of the range that is inside the event
+function earnedBetween(fromMs, toMs)
+{
+    const seconds = Math.max(0, toMs - fromMs) / 1000;
+    const boostedSeconds = getBoostedSeconds(fromMs, toMs);
+    const multiplier = incomeBoost ? incomeBoost.multiplier : 1;
+
+    return passiveIncome * seconds + passiveIncome * (multiplier - 1) * boostedSeconds;
+}
+
+// the income per second that is really paid right now
+function getCurrentIncome()
+{
+    const now = Date.now();
+    const boosted = incomeBoost && now >= incomeBoost.startsAt && now < incomeBoost.endsAt;
+
+    return passiveIncome * (boosted ? incomeBoost.multiplier : 1);
+}
+
 function renderMoney()
 {
-    const formattedMoney = money.toLocaleString(undefined, { maximumFractionDigits: 2 });
-    const formattedIncome = passiveIncome.toLocaleString(undefined, { maximumFractionDigits: 2 });
-    playerMoneyElement.textContent = `${formattedMoney} $ | +${formattedIncome} $/s`;
+    playerMoneyElement.textContent = `${formatMoney(money)} $ | +${formatMoney(getCurrentIncome())} $/s`;
+}
+
+export function getMoney()
+{
+    return money;
+}
+
+export function getGameSession()
+{
+    return gameSession;
+}
+
+// Used by events.js (Gold Rush). Everything earned so far is settled with the old boost first, then the new one is applied.
+// The boost can also be set before the money system starts, so the offline income of a running event is counted.
+export function setIncomeBoost(boost)
+{
+    accrueIncome();
+    incomeBoost = boost ?? null;
+    renderMoney();
 }
 
 // money is accrued every second, but we also need to account for the time elapsed since the last tick when the page was hidden or the user switched tabs
@@ -31,8 +84,9 @@ function accrueIncome()
     const seconds = Math.floor((Date.now() - lastTickAt) / 1000);
     if (seconds <= 0) return;
 
+    const from = lastTickAt;
     lastTickAt += seconds * 1000;
-    money += passiveIncome * seconds;
+    money += earnedBetween(from, lastTickAt);
     renderMoney();
 }
 
@@ -82,6 +136,7 @@ export function stopMoneySystem()
         incomeTimer = null;
     }
 
+    // the boost is not touched here, it belongs to the running event (events.js clears it)
     gameSession = null;
     money = 0;
     passiveIncome = 0;
@@ -107,7 +162,7 @@ export async function startMoneySystem()
     if (Number.isFinite(lastSave))
     {
         const elapsedSeconds = Math.max(0, Math.floor((Date.now() - lastSave) / 1000));
-        money += passiveIncome * elapsedSeconds;
+        money += earnedBetween(lastSave, lastSave + elapsedSeconds * 1000);
     }
 
     renderMoney();
