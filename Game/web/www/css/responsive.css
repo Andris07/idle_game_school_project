@@ -13,6 +13,28 @@
     .menu
     {
         border-radius: 10px;
+        grid-template-columns: auto 1fr auto;
+    }
+
+    .menu-section
+    {
+        padding: 8px 10px;
+    }
+
+    .game-info
+    {
+        gap: 6px;
+    }
+
+    .game-info-item
+    {
+        font-size: 12px;
+    }
+
+    .event-icon
+    {
+        width: 24px;
+        height: 24px;
     }
 
     .play-cell
@@ -39,5 +61,130 @@
     .drag-ghost
     {
         opacity: 0.7;
+    }
+}
+
+@media only screen and (max-width: 480px)
+{
+    .menu-info
+    {
+        padding: 8px 4px;
+    }
+
+    .game-info-item
+    {
+        font-size: 11px;
+    }
+
+    .theme-toggle
+    {
+        width: 36px;
+        height: 36px;
+    }
+
+    #popup-window
+    {
+        padding: 24px 18px;
+        gap: 12px;
+    }
+
+    #popup-window h2
+    {
+        font-size: 16px;
+    }
+
+    .popup-icon
+    {
+        width: 76px;
+        height: 76px;
+    }
+
+    .popup-highlight
+    {
+        font-size: 20px;
+    }
+
+    .popup-row
+    {
+        padding: 8px 10px;
+    }
+}
+
+@media (prefers-reduced-motion: reduce)
+{
+    #popup-window,
+    #popup-overlay,
+    .popup-icon,
+    .event-icon
+    {
+        animation: none;
+    }
+}
+
+@media only screen and (max-width: 480px)
+{
+    .container
+    {
+        padding: 12px;
+    }
+
+    /* the two panels stay stacked and never wider than the screen */
+    .itemcont
+    {
+        min-width: min(300px, 100%);
+    }
+}
+
+@media only screen and (max-width: 380px)
+{
+    .menu
+    {
+        width: 96vw;
+    }
+
+    .menu-section
+    {
+        padding: 6px;
+        gap: 4px;
+    }
+
+    .menu-info
+    {
+        min-width: 0;
+    }
+
+    .game-info
+    {
+        gap: 4px;
+    }
+
+    .game-info-item
+    {
+        font-size: 10px;
+    }
+
+    .event-icon
+    {
+        width: 20px;
+        height: 20px;
+    }
+
+    .theme-toggle
+    {
+        width: 32px;
+        height: 32px;
+    }
+
+    .repo-icon,
+    .restart-icon
+    {
+        width: 20px;
+        height: 20px;
+    }
+
+    .toggle-icon
+    {
+        width: 18px;
+        height: 18px;
     }
 }

@@ -283,16 +283,25 @@ html[data-theme="light"] .toggle-icon
 
 #popup-overlay
 {
-    background: rgba(0, 0, 0, 0.5);
-    backdrop-filter: blur(3px);
+    background: rgba(0, 0, 0, 0.6);
+    backdrop-filter: blur(4px);
+    animation: popup-fade 0.18s ease-out;
 }
 
 #popup-window
 {
-    background-color: var(--surface);
+    background: linear-gradient(180deg, var(--itemcont) 0%, var(--surface) 100%);
     color: var(--background-text);
     border: 3px solid var(--accent);
-    border-radius: 12px;
+    border-radius: 14px;
+    box-shadow: 0 0 22px var(--accent-glow), 0 12px 40px rgba(0, 0, 0, 0.45);
+    animation: popup-pop 0.22s cubic-bezier(0.2, 1.1, 0.4, 1);
+}
+
+#popup-window.popup-window-error
+{
+    border-color: var(--invalid);
+    box-shadow: 0 0 22px var(--invalid-soft), 0 12px 40px rgba(0, 0, 0, 0.45);
 }
 
 #popup-window h2
@@ -300,7 +309,93 @@ html[data-theme="light"] .toggle-icon
     font-family: "Arial Black", sans-serif;
     text-transform: uppercase;
     font-weight: bold;
-    font-size: 16px;
+    font-size: 18px;
+    letter-spacing: 0.08em;
+    color: var(--accent);
+    text-shadow: 0 0 10px var(--accent-glow);
+}
+
+.popup-window-error h2
+{
+    color: var(--invalid);
+    text-shadow: 0 0 10px var(--invalid-soft);
+}
+
+.popup-icon
+{
+    width: 96px;
+    height: 96px;
+    align-self: center;
+    object-fit: contain;
+    filter: drop-shadow(0 0 12px var(--secondary-glow));
+    animation: popup-float 2.4s ease-in-out infinite;
+}
+
+.popup-highlight
+{
+    margin: 0;
+    font-family: "Arial Black", sans-serif;
+    font-size: 24px;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    color: var(--secondary);
+    text-shadow: 0 0 14px var(--secondary-glow);
+}
+
+.popup-message
+{
+    margin: 0;
+    font-family: Arial, sans-serif;
+    font-size: 14px;
+    line-height: 1.45;
+    opacity: 0.92;
+}
+
+.popup-message-error
+{
+    color: var(--invalid);
+    font-weight: bold;
+    opacity: 1;
+}
+
+.popup-rows
+{
+    margin: 4px 0;
+    border: 2px solid var(--accent);
+    border-radius: 10px;
+    overflow: hidden;
+    background-color: var(--surface);
+}
+
+.popup-row
+{
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    padding: 10px 14px;
+}
+
+.popup-row + .popup-row
+{
+    border-top: 1px solid var(--accent);
+}
+
+.popup-row dt
+{
+    font-family: "Arial Black", sans-serif;
+    font-size: 12px;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    color: var(--accent);
+}
+
+.popup-row dd
+{
+    font-family: "Arial Black", sans-serif;
+    font-size: 15px;
+    text-align: right;
+    color: var(--secondary);
 }
 
 #grid-size-select
@@ -314,6 +409,13 @@ html[data-theme="light"] .toggle-icon
     color: var(--background-text);
     border: 2px solid var(--accent);
     border-radius: 8px;
+    cursor: pointer;
+}
+
+#grid-size-select:focus-visible
+{
+    outline: 2px solid var(--secondary);
+    outline-offset: 3px;
 }
 
 #start-game-button,
@@ -323,29 +425,141 @@ html[data-theme="light"] .toggle-icon
     text-transform: uppercase;
     font-weight: bold;
     font-size: 16px;
+    letter-spacing: 0.06em;
     background-color: var(--secondary);
-    color: var(--background-text);
+    color: var(--secondary-text);
+    text-shadow: 0 1px 1px var(--bevel-dark);
     border: none;
     border-radius: 8px;
     cursor: pointer;
+    box-shadow: 0 0 10px var(--secondary-glow), inset 0 1px 0 var(--bevel-light), inset 0 -3px 6px var(--bevel-dark);
+    transition: transform 0.15s ease, filter 0.2s ease, box-shadow 0.2s ease;
 }
 
-.popup-message
+#start-game-button:hover:not(:disabled),
+#popup-close-button:hover
 {
-    margin: 0;
-    font-size: 14px;
+    transform: translateY(-1px);
+    filter: brightness(1.07);
+    box-shadow: 0 0 16px var(--secondary-glow), inset 0 1px 0 var(--bevel-light), inset 0 -3px 6px var(--bevel-dark);
 }
 
-.popup-message-error
+#start-game-button:active:not(:disabled),
+#popup-close-button:active
 {
-    color: var(--invalid);
-    font-weight: bold;
+    transform: translateY(1px);
+    filter: brightness(0.96);
+}
+
+#start-game-button:focus-visible,
+#popup-close-button:focus-visible
+{
+    outline: 2px solid var(--background-text);
+    outline-offset: 3px;
 }
 
 #start-game-button:disabled
 {
     cursor: not-allowed;
     opacity: 0.6;
+    filter: saturate(0.6);
+}
+
+@keyframes popup-fade
+{
+    from { opacity: 0; }
+    to { opacity: 1; }
+}
+
+@keyframes popup-pop
+{
+    from { opacity: 0; transform: translateY(10px) scale(0.94); }
+    to { opacity: 1; transform: none; }
+}
+
+@keyframes popup-float
+{
+    0%, 100% { transform: translateY(0); }
+    50% { transform: translateY(-6px); }
+}
+
+/* Quick time event in the menu: icon + remaining time */
+.event-icon
+{
+    width: 30px;
+    height: 30px;
+    flex: none;
+    object-fit: contain;
+    filter: drop-shadow(0 0 6px var(--event-color, var(--secondary-glow)));
+    animation: popup-float 2.4s ease-in-out infinite;
+}
+
+.event-icon[hidden]
+{
+    display: none;
+}
+
+#game-timer
+{
+    min-width: 5ch;
+    text-align: center;
+    font-variant-numeric: tabular-nums;
+}
+
+#game-timer.is-running
+{
+    color: var(--event-text, var(--secondary));
+    text-shadow: 0 0 8px var(--event-color, var(--secondary-glow));
+}
+
+#player-money
+{
+    white-space: nowrap;
+}
+
+/* The running event gives a colour to the page */
+body[data-event="gold_rush"] { --event-color: #ffc83d; }
+body[data-event="double_shape"] { --event-color: #5fd0ff; }
+body[data-event="time_freeze"] { --event-color: #8fe3ff; }
+body[data-event="value_burst"] { --event-color: #ff6b8a; }
+
+/* the text colour of the timer: the event colour itself on dark, a darker shade of it on the light theme (readable) */
+body[data-event] { --event-text: var(--event-color); }
+html[data-theme="light"] body[data-event] { --event-text: color-mix(in srgb, var(--event-color) 45%, black); }
+html[data-theme="light"] #game-timer.is-running { text-shadow: none; font-weight: bold; }
+
+body[data-event] .menu
+{
+    box-shadow: 0 0 14px var(--event-color), inset 0 0 0 2px var(--event-color);
+}
+
+body[data-event="time_freeze"] #playgrid
+{
+    border-color: var(--event-color);
+    box-shadow: inset 0 0 28px rgba(143, 227, 255, 0.28);
+}
+
+body[data-event="time_freeze"] .playgrid-grid .play-cell-filled
+{
+    background-color: #8fe3ff;
+    border-color: #d6f6ff;
+}
+
+body[data-event="double_shape"] #inventory
+{
+    box-shadow: inset 0 0 22px rgba(95, 208, 255, 0.3);
+}
+
+/* Chests */
+.chest-img img
+{
+    transition: transform 0.25s ease, filter 0.25s ease;
+}
+
+.chest:hover .chest-img img
+{
+    transform: translateY(-4px) scale(1.04);
+    filter: drop-shadow(0 6px 10px rgba(0, 0, 0, 0.45));
 }
 
 .play-cell

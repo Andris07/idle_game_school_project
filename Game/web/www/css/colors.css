@@ -45,6 +45,8 @@
     --bevel-light-soft: rgba(255, 255, 255, 0.14);
     --bevel-dark: rgba(0, 0, 0, 0.28);
 
+    --accent-glow: rgba(238, 66, 102, 0.45);
+
     --valid: var(--green);
     --valid-soft: rgba(46, 204, 113, 0.65);
     --invalid: var(--red);
@@ -70,6 +72,7 @@
 
     --accent: var(--warm-purple);
     --accent-text: var(--white);
+    --accent-glow: rgba(115, 113, 252, 0.4);
 
     --secondary: var(--orange);
     --secondary-text: var(--white);
