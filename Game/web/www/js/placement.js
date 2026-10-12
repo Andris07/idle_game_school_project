@@ -176,7 +176,6 @@ async function clearCompletedLines(completedLines)
 {
     const rows = new Set(completedLines.rows);
     const columns = new Set(completedLines.columns);
-    const operations = [];
 
     for (const placement of placements)
     {
@@ -186,23 +185,15 @@ async function clearCompletedLines(completedLines)
 
         if (remainingCells.length === placement.cells.length) continue;
 
-        operations.push(remainingCells.length === 0
-            ? deleteDbById("PLACEMENT", placement.id)
-            : putDbById("PLACEMENT", placement.id, { ...placement, cells: remainingCells }));
-    }
-
-    if (operations.length === 0)
-    {
-        renderPlacements();
-        return;
-    }
-
-    // a failed placement can't mess up the game state, because we always reload placements from the server after placing a shape, so we can just log the error and continue
-    const results = await Promise.allSettled(operations);
-
-    if (results.some((result) => result.status === "rejected"))
-    {
-        console.error("Some placements could not be cleared: ", results);
+        // Serialize mutations to avoid concurrent writes racing in the JSON-backed database.
+        if (remainingCells.length === 0)
+        {
+            await deleteDbById("PLACEMENT", placement.id);
+        }
+        else
+        {
+            await putDbById("PLACEMENT", placement.id, { ...placement, cells: remainingCells });
+        }
     }
 
     await loadPlacements();
