@@ -1,6 +1,6 @@
 import { fetchDb, postDb, putDbById, deleteDbById } from "./data.js";
 import { refreshInventory, getInventoryItem } from "./app.js";
-import { addMoney, updatePassiveIncome } from "./money.js";
+import { addMoney, showLineReward, updatePassiveIncome } from "./money.js";
 import { isGridFrozen, getLineRewardMultiplier, onEventEnd } from "./events.js";
 import { showMessagePopup } from "./popup.js";
 
@@ -560,6 +560,7 @@ async function placeShape(data, target)
         if (lineReward > 0)
         {
             await addMoney(lineReward);
+            showLineReward(lineReward);
         }
     }
     catch (error)
@@ -613,7 +614,11 @@ async function settleFrozenLines()
             await clearCompletedLines(completedLines);
             updatePassiveIncome(placements);
 
-            if (lineReward > 0) await addMoney(lineReward);
+            if (lineReward > 0)
+            {
+                await addMoney(lineReward);
+                showLineReward(lineReward);
+            }
 
             showMessagePopup("Time Freeze ended",
             [

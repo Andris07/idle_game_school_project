@@ -517,6 +517,26 @@ html[data-theme="light"] .toggle-icon
     white-space: nowrap;
 }
 
+.money-display
+{
+    position: relative;
+    display: inline-flex;
+}
+
+.line-reward-popup
+{
+    position: absolute;
+    left: calc(100% + 8px);
+    top: 50%;
+    z-index: 2;
+    color: #58d68d;
+    font-family: "Arial Black", Arial, sans-serif;
+    font-size: 14px;
+    pointer-events: none;
+    white-space: nowrap;
+    text-shadow: 0 1px 3px var(--background-text);
+}
+
 /* The running event gives a colour to the page */
 body[data-event="gold_rush"] { --event-color: #ffc83d; }
 body[data-event="double_shape"] { --event-color: #5fd0ff; }
