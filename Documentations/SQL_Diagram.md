@@ -8,14 +8,10 @@ erDiagram
     GAME_SESSION ||--o{ INVENTORY_ITEM : contains
     SHAPE ||--o{ INVENTORY_ITEM : stored_as
 
-    GAME_SESSION ||--o{ BOARD_CELL : contains
-    INVENTORY_ITEM ||--o{ BOARD_CELL : occupies
-
     GAME_SESSION ||--o{ PLACEMENT : records
     SHAPE ||--o{ PLACEMENT : uses
-    PLACEMENT ||--o{ BOARD_CELL : uses
 
-    GAME_SESSION ||--o{ GAME_EVENT : activates
+    GAME_SESSION ||--o| GAME_EVENT : activates
     EVENT_TYPE ||--o{ GAME_EVENT : classifies
 
 
@@ -30,11 +26,13 @@ erDiagram
         INT difficulty_id FK
         DECIMAL money
         DATETIME last_save_at
+        DATETIME started_at
     }
 
     SHAPE {
         INT id PK
         VARCHAR name
+        JSON cells
         DECIMAL base_value
     }
 
@@ -42,13 +40,7 @@ erDiagram
         INT id PK
         INT shape_id FK
         DECIMAL value
-    }
-
-    BOARD_CELL {
-        INT id PK
-        INT x_coord
-        INT y_coord
-        BOOLEAN occupied
+        JSON cells
     }
 
     PLACEMENT {

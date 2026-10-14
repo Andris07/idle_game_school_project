@@ -22,7 +22,7 @@
 
 ### 🎯 Miről szól az Idle Tetris?
 
-Az **Idle Tetris** egy egyedi koncepción alapuló **böngésző alapú stratégiai játék**, amely ötvözi a klasszikus Tetris mechanikát az **idle (inaktív) játékok** és a **szerencsejáték** elemeivel. A játékosok különböző formájú tetris elemeket helyeznek el egy rácsos táblán, miközben passzív jövedelmet termelnek, és különféle ládákból szerezhetnek fejlesztéseket, új elemeket, illetve időszakos eseményeket aktiválhatnak.
+Az **Idle Tetris** egy egyedi koncepción alapuló **böngésző alapú stratégiai játék**, amely ötvözi a klasszikus Tetris mechanikát az **idle (inaktív) játékok** és a **szerencsejáték** elemeivel. A játékosok különböző formájú tetris elemeket húznak a készletből egy rácsos táblára, miközben passzív jövedelmet termelnek, és különféle ládákból szerezhetnek új elemeket, alakzat-fejlesztéseket, illetve időszakos eseményeket aktiválhatnak.
 
 A játék lényege, hogy a lehető **legtöbb pénzt** gyűjtsd össze a stratégiai elhelyezések, a sorok/oszlopok teljesítése, valamint a ládákból nyert bónuszok okos kombinálásával. Minden döntés számít – egy rosszul elhelyezett elem vagy egy elkapkodott láda nyitás akár a játék végét is jelentheti.
 
@@ -34,13 +34,15 @@ A weboldal egy **teljes értékű, interaktív játékalkalmazás**, amely a kö
 
 | Funkció | Leírás |
 |---------|--------|
-| 🎮 **Játékmenet** | Valós idejű tetris elemek elhelyezése egy dinamikus rácson |
+| 🎮 **Játékmenet** | Tetris elemek húzással (egérrel vagy érintéssel) történő elhelyezése egy dinamikus rácson, elforgatási lehetőséggel |
 | 📊 **Nehézségi szintek** | Három nehézségi fokozat (Könnyű, Normál, Nehéz), eltérő táblaméretekkel |
-| 💰 **Passzív jövedelem** | Minden elhelyezett elem automatikusan bevételt termel |
-| 🧩 **Sor/oszlop teljesítés** | Teljes sorok vagy oszlopok különleges bónuszokat aktiválnak, amelyek exponenciálisan növekedhetnek |
-| 🎁 **Láda rendszer** | Háromféle láda (alakzat, fejlesztés, esemény) véletlenszerű tartalommal |
+| 💰 **Passzív jövedelem** | Minden elhelyezett elem másodpercenként bevételt termel, a játékból kilépve is (a távollét idejére járó pénz visszatéréskor jóváíródik) |
+| 🧩 **Sor/oszlop teljesítés** | Teljes sorok vagy oszlopok eltűnnek és jutalmat adnak (az érintett alakzatok értékösszege × darabszámuk), egyszerre több vonal esetén kombó szorzóval |
+| 🎁 **Láda rendszer** | Háromféle láda (Shape 100 $, Upgrade 2500 $, Buff 5000 $) véletlenszerű tartalommal, az eredményt felugró ablak mutatja |
 | 📦 **Raktárkészlet** | Az összes megszerzett alakzat tárolása és kezelése, csak 8 férőhely |
-| ⏳ **Időzített események** | Percekben és másodpercekben mért időkorlátos bónuszok |
+| ⏳ **Időzített események** | A Buff ládából nyerhető, percekben és másodpercekben mért időkorlátos hatások (Aranyláz, Dupla alakzat, Időbefagyasztás, Értékrobbanás), a hátralévő idő a menüsávban látható |
+| 💀 **Játék vége** | Ha a készlet megtelt és egyik alakzat sem fér el a táblán, összegző ablak jelenik meg, majd új játék indul |
+| 💾 **Szerver oldali mentés** | A teljes játékállás (pénz, készlet, tábla, futó esemény) a json-serverben van, így frissítés után is folytatható |
 | 📱 **Reszponzív dizájn** | Asztali és mobil eszközökön is teljes mértékben működőképes |
 
 ---
@@ -54,18 +56,15 @@ A projekt fejlesztése során az alábbi **konkrét, mérhető célokat** tűzt�
 ### 🥇 **Elsődleges célok (Alap működés)**
 - [x] Teljesen működőképes játék implementálása
 - [x] Három nehézségi szint bevezetése eltérő táblaméretekkel
-- [x] Alakzatok generálása és elhelyezése kattintásos mechanikával
+- [x] Alakzatok generálása és elhelyezése húzásos (drag & drop) mechanikával
 - [x] Passzív jövedelem számítási rendszer kidolgozása
 - [x] Sorok és oszlopok felismerése és bónuszok kiosztása
 - [x] Háromféle láda (alakzat, fejlesztés, esemény) implementálása
-- [x] Raktárkészlet rendszer létrehozása
+- [x] Raktárkészlet rendszer létrehozása (8 férőhely)
+- [x] Időzített események (Aranyláz, Dupla alakzat, Időbefagyasztás, Értékrobbanás)
+- [x] Pénzrendszer, ládák árazása és sortörlési jutalmak
 - [x] Játék vége állapot kezelése és újraindítási lehetőség
 - [x] Reszponzív felület kialakítása
-
-### 🥈 **Másodlagos célok (Felhasználói élmény)**
-- Intuitív oktatóanyag és segítségrendszer
-- Hang- és vizuális visszajelzések minden interakcióhoz
-- Mentési és betöltési funkció (böngésző local storage)
 
 ---
 
