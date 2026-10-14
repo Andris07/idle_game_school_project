@@ -11,6 +11,25 @@ Az Idle Tetris nem csupán a sorok eltüntetéséről szól. Hanem a **rács opt
 
 ---
 
+## 🚀 Kipróbálás
+
+A játék két Docker konténerből áll (adatbázis szerver + weboldal), a részletes indítási lépések a [fejlesztői dokumentációban](Documentations/Developer.md#futtatás) vannak. Röviden:
+
+```bash
+# adatbázis (json-server)
+cd Game/json
+docker build -t json/json-alpine .
+docker run -d --name json -p 3000:3000 -v "./databases/db.json:/data/db.json" json/json-alpine /data/db.json
+
+# weboldal (első alkalommal: .env-example -> .env)
+cd ../web
+docker compose up -d
+```
+
+A játék ezután a `http://localhost` címen érhető el. A játék állapota (pénz, készlet, tábla, futó esemény) a szerveren van, ezért az oldal frissítése vagy bezárása után is folytatható.
+
+---
+
 ## 🎮 Játékmenet-áttekintés
 
 ### 🧱 A játékrács
@@ -22,77 +41,87 @@ A játéktér egy négyzetrács, melynek méreteit a játék elején kiválaszto
 | 🟡 **Normál** | 8x8       | 64          | Kiegyensúlyozott, éppen elég szűk a kihíváshoz, de elég tág a lélegzethez |
 | 🔴 **Nehéz** | 6x6       | 36          | Klausztrofób, könyörtelen, csak az igazán merészeknek |
 
+Minden játék **100 $**-ral indul.
+
 ---
 
 ### 📦 Alakzatok elhelyezése
-**Tetris-alakú poliominoakat** kapsz (a klasszikus 7 formából álló készletből, plusz variációkkal), amelyeket bárhová elhelyezhetsz a rácson, **amennyiben van elegendő összefüggő szabad terület** az alakzat pontos formájához.
+**Tetris-alakú poliominoakat** (a klasszikus 7 forma: I, O, T, S, Z, J, L) kapsz, amelyeket a készletedből **húzással** helyezhetsz a rácsra (egérrel és érintőképernyőn is), **amennyiben van elegendő összefüggő szabad terület** az alakzat pontos formájához. Húzás közben zöld, illetve piros előnézet mutatja, hogy a lerakás érvényes-e.
 
 - ✅ Elforgathatod az alakzatokat elhelyezés előtt.
-- ❌ Elhelyezés után az alakzat **véglegesen rögzül** – nincs áthelyezés, nincs visszatérítés.
+- ❌ Elhelyezés után az alakzat **véglegesen rögzül** – nincs áthelyezés, nincs visszatérítés. Egy teljes sor vagy oszlop törlésekor az alakzatnak csak a törölt cellái tűnnek el, a maradék a helyén marad.
 - 🧠 A stratégiai elhelyezés kulcsfontosságú: hagyj helyet a jövőbeli értékes daraboknak, és tervezz sor-/oszlopkiegészítési kombókat.
 
 ---
 
 ### 💰 Passzív jövedelem és értékrendszer
-Minden egyes elhelyezett alakzat **passzív jövedelmet** termel az idő múlásával. Az egyes alakzatok alapértéke véletlenszerűen kerül meghatározásra, amikor megszerzed – ami azt jelenti, hogy két egyforma kinézetű darab gazdasági potenciálja teljesen eltérő lehet.
+Minden egyes elhelyezett alakzat **passzív jövedelmet** termel: a táblán lévő alakzatok értékének összege **másodpercenként** íródik jóvá (a menüsávban látható: `pénz | +X $/s`). A jövedelem akkor is gyűlik, amikor a játék nincs megnyitva – visszatéréskor a távollét idejére járó pénz is jóváíródik.
 
-- **Alapérték:** Minden alakzatnak van egy rejtett számszerű értéke (pl. 5–50 érme tickenként) amit hozzáad a véletlenszerűen generált értékhez.
+- **Érték:** egy alakzat értéke a megszerzésekor dől el: az alakzat típusának aktuális **alapértéke** (kezdetben 0, a fejlesztőládák növelik) **plusz egy véletlen 6–10 közötti szám**. Két egyforma kinézetű darab gazdasági potenciálja így eltérő lehet.
+- Az érték **a darabbal marad**: egy később megemelt alapérték nem változtatja meg a már megszerzett alakzatok értékét.
+- Ha egy alakzatnak csak egy része törlődik sortörléskor, az **értéke teljes egészében megmarad**, és addig termel, amíg legalább egy cellája a táblán van.
 
 ---
 
 ### 🧩 Sor- és oszlopkiegészítés – Az igazi pénzkereső
 Itt válik az Idle Tetris a passzív gyűjtögetésből **kombóvadász adrenalinlöketé**.
 
-- Amikor **kitöltesz egy teljes sort** (az összes cella megtelt), a játék kiszámolja **az adott sorban lévő összes alakzat összértékét**, és megszorozza azon alakzatok számával, amelyek hozzájárultak a sorhoz.
+- Amikor **kitöltesz egy teljes sort** (az összes cella megtelt), a játék kiszámolja **az adott sorban lévő összes alakzat összértékét** (minden alakzatot, aminek legalább egy cellája a sorban van), és megszorozza azon alakzatok számával. A sor ezután eltűnik, és a jutalom azonnal jóváíródik.
 - Ugyanez vonatkozik az **oszlopokra** – egy teljes oszlop hasonló jutalomszámítást indít el.
-- **🔥 KOMBÓ BÓNUSZ 🔥** – Ha egyetlen elhelyezéssel (vagy egy befagyasztási esemény során) **több sort és/vagy oszlopot** is kitöltesz, a jutalmak **egymással szorzódnak** oszloponkénti/soronkénti értékeikkel.
-  
-  Ez az exponenciális skálázás **rendkívüli nyereményeket** eredményezhet – de ehhez mesteri tervezés és egy kis szerencse szükséges.
+- **🔥 KOMBÓ BÓNUSZ 🔥** – Ha egyetlen elhelyezéssel **több sort és/vagy oszlopot** is kitöltesz, a jutalmak összeadódnak, és az összeget egy kombó szorzó növeli: a szorzó **legalább ×2**, és ha 6 vagy több vonal törlődik egyszerre, vonalanként további +0,25-del nő (`max(2, 1 + 0,25 · (vonalak − 1))`).
+
+  Egy nagy kombó **rendkívüli nyereményeket** eredményezhet – de ehhez mesteri tervezés és egy kis szerencse szükséges.
 
 ---
 
 ### 💀 Játék vége feltétel
-Ha bármikor a rács **teljesen megtelik**, és a készletedben egyetlen alakzatnak sincs érvényes helye, **a játék véget ér**, és elveszíted az összes előrehaladásodat.
+Ha a készleted **megtelt (8 alakzat)**, és **egyik alakzatnak sincs már érvényes helye** a táblán (egyik elforgatásban sem), **a játék véget ér**. Egy összegző ablak mutatja a nehézséget, a pénzedet és a játékidőt, majd új játékot kezdhetsz. Amíg fut az Időbefagyasztás esemény, a játék nem érhet véget, mert a végén a rács felszabadul.
 
 ---
 
 ## 🎁 A három láda – Az út a gazdagsághoz
 
-A ládák az Idle Tetris szívét jelentik. Ezek megvásárolhatók játékbeli valutáért. Mindegyik láda más-más célt szolgál, és más-más ízű kockázat-jutalom dinamikát kínál.
+A ládák az Idle Tetris szívét jelentik. Ezek megvásárolhatók játékbeli valutáért, és minden kinyitás eredményét egy felugró ablak mutatja. Mindegyik láda más-más célt szolgál, és más-más ízű kockázat-jutalom dinamikát kínál.
+
+| Láda | Ár | Mit ad? |
+|------|----|---------|
+| 🟦 **Alakzatláda** (Shape Chest) | 100 $ | Egy véletlen alakzatot a készletbe |
+| 🟧 **Fejlesztőláda** (Upgrade Chest) | 2500 $ | Egy véletlen alakzattípus alapértékét növeli |
+| 🟪 **Eseményláda** (Buff Chest) | 5000 $ | Egy véletlen, időzített eseményt indít |
 
 ---
 
 ### 🟦 1. láda – Az alakzatláda *(Tetromino-arszenál)*
-Ez a láda **egy véletlenszerű Tetris-alakzatot** ad a készletedhez.
+Ez a láda **egy véletlenszerű Tetris-alakzatot** ad a készletedhez (ha a készlet megtelt, a gomb le van tiltva).
 
 - **Ritkaságeloszlás:** Minden alakzatnak egyenlő esélye van a megjelenésre (egyenletes valószínűség).
-- **Értékváltozatosság:** Még az egyforma alakzatok között is **az értékük** véletlenszerű. Lehet, hogy egy nyomorult 5 érmés Z-darabot húzol, vagy egy ragyogó 50 érmés T-darabot.
+- **Értékváltozatosság:** Még az egyforma alakzatok között is **az értékük** véletlenszerű: az alakzattípus aktuális alapértéke + 6–10.
 - **Stratégiai felhasználás:** Gyűjts nagy értékű darabokat sor-/oszlopkiegészítésekhez, vagy használj olcsókat a hézagok kitöltésére és a kombók erőltetésére.
 
 ---
 
 ### 🟧 2. láda – A fejlesztőláda *(Erősítő páncélszekrény)*
-Ez a láda lehetővé teszi, hogy **egy általad választott alakzatot** fejlessz a készletedből.
+Ez a láda **egy véletlenszerűen kiválasztott alap alakzattípus** (I, O, T, S, Z, J vagy L) **alapértékét** növeli meg **10 és 50 közötti** véletlen összeggel. A felugró ablak megmutatja, melyik alakzat fejlődött, és mennyivel.
 
-- **Két fejlesztéstípus:**
-  1. **Fix növekmény:** Az alakzat alapértékének növelése egy fix összeggel (pl. +10 érme).
-  2. **Szorzónövelés:** Az alakzat aktuális alapértékének megszorzása egy tényezővel (pl. 1,1x, 1.3x).
-- **Kockázat:** A fejlesztések véglegesek, tehát bölcsen válassz – egy gyenge alakzat korai fejlesztése később megtérülhet, ha egy nagy kombó részévé válik.
-- **Összehangolás:** A fejlesztett alakzatok többet hozzájárulnak a sor-/oszlopjutalmakhoz, így felbecsülhetetlen értékűvé válnak a magas pontszámú futásokhoz.
+- **Csak az új alakzatokra hat:** a fejlesztés után kinyitott alakzatok kapják az emelt alapértéket. A készletedben lévő és a már lerakott alakzatok értéke nem változik.
+- **Halmozódik:** ugyanaz az alakzattípus többször is fejlődhet, így a szerencsés típus egyre értékesebb darabokat ad.
+- **Kockázat:** nem te választod ki, melyik típus fejlődik, és a fejlesztés új játékig megmarad. Új játék indításakor az alapértékek nullázódnak.
 
 ---
 
 ### 🟪 3. láda – Az eseményláda *(Káosz-katalizátor)*
-Ez a láda egy **ideiglenes globális eseményt** indít el, amely hatással van az egész játéktáblára és a bevételeidre.
+Ez a láda **egy véletlenszerűen kiválasztott (egyenként 25% eséllyel) ideiglenes globális eseményt** indít el, amely hatással van a játékra és a bevételeidre. Az esemény a felugró ablak bezárásakor indul, a hátralévő idő a menüsávban látható az esemény ikonja mellett.
 
 | Esemény neve | Hatás | Időtartam |
 |------------|--------|----------|
 | 💰 **Aranyláz** | Minden passzív jövedelem megszorzódik 2x-el | 5 perc |
-| 🌀 **Dupla alakzat** | Minden kinyitott alakzat egy azonos másolatot generál a készletedben | 1 perc |
-| ⏳ **Időbefagyasztás** | A rács leáll, nem kombinálódnak a sorok/oszlopok, nyomás nélkül helyezhetsz el alakzatokat hatalmas profitért | 30 másodperc |
+| 🌀 **Dupla alakzat** | Minden kinyitott alakzat egy azonos másolatot generál a készletedben (amennyiben van hely) | 1 perc |
+| ⏳ **Időbefagyasztás** | A kész sorok/oszlopok nem tűnnek el, csak a fagyás végén törlődnek, és **egyetlen kombóként** fizetődnek ki | 30 másodperc |
 | 📈 **Értékrobbanás** | Az összes sor-/oszlopkiegészítési jutalom 50%-kal nő | 3 perc |
 
-- **Stratégia:** Időzítsd jól az eseményládák nyitását – egy Aranyláz aktiválása egy nagy sor-/oszlopkombó előtt csillagászati hozamokat eredményezhet.
+- **Egyszerre egy esemény:** amíg egy esemény fut, az Eseményláda le van tiltva.
+- **Szerver oldali:** a futó esemény elmentődik, így az oldal újratöltése után is folytatódik (az Aranyláz a távollét idejére is számít).
+- **Stratégia:** Időzítsd jól az eseményládák nyitását – egy Értékrobbanás aktiválása egy nagy sor-/oszlopkombó előtt, vagy egy Időbefagyasztás alatt gondosan felépített, több vonalas kombó csillagászati hozamokat eredményezhet.
 
 ---
 
@@ -100,19 +129,19 @@ Ez a láda egy **ideiglenes globális eseményt** indít el, amely hatással van
 
 Minden alakzat, amelyet az 1. ládából szerzel, a **készletedben** tárolódik, 8 tárolóegységben, amely mutatja:
 
-- Alakzat típusát (I, O, T, S, Z, J, L)
-- Teljes bevételi hozzájárulását
+- Az alakzat formáját (és forgató gombot)
+- Az alakzat értékét (ennyivel járul hozzá a másodpercenkénti bevételhez, ha lerakod)
 
 **Fő szabályok:**
 - Az alakzatokat **bármilyen sorrendben** és bármikor elhelyezheted.
 - **Nincs időkorlát** arra vonatkozóan, hogy mikor kell elhelyezned egy alakzatot.
-- Nem törölhetsz vagy dobhatsz el alakzatokat – de fejlesztheted őket a hasznosságuk növelése érdekében.
+- Nem törölhetsz vagy dobhatsz el alakzatokat – a készletből csak a táblára helyezéssel szabadíthatsz fel helyet. Az alakzatok értékét nem lehet egyenként fejleszteni, csak a típusok alapértékét a Fejlesztőláda segítségével.
 
 ---
 
 ## ⚙️ Nehézségi skálázás – Válaszd ki a kihívást
 
-A nehézségi választásod nemcsak a rács méretét érinti – hatással van az egész játékgazdaságra is.
+A nehézségi választásod a rács méretét határozza meg, ami közvetlenül hat a játék vége kockázatára és arra, hogy mennyire nehéz kombókat építeni.
 
 | Szempont | Könnyű | Normál | Nehéz |
 |--------|------|--------|------|
@@ -127,9 +156,9 @@ A nehézségi választásod nemcsak a rács méretét érinti – hatással van 
 
 - **Sarokpakolás:** Helyezz nagy értékű darabokat a sarkokba, hogy maximalizáld a sor-/oszlopkiegészítési potenciált.
 - **Hézagkezelés:** Hagyj szándékosan réseket, hogy a jövőbeli darabokat kombólehetőségekbe tereld.
-- **Fejlesztések halmozása:** Tartsd meg a fejlesztő ládákat olyan darabokhoz, amelyek majdnem kész sorok/oszlopok részei.
-- **Eseményláncolás:** Nyiss egy eseményládát közvetlenül egy nagy kombó előtt, hogy megsokszorozd a lendületed.
-- **Készletváltogatás:** Tarts egy keveréket olcsó töltelékdarabokból és drága erődarabokból, hogy bármilyen rácsállapothoz alkalmazkodni tudj.
+- **Korai fejlesztés:** A Fejlesztőláda hatása csak az utána szerzett alakzatokra érvényes, ezért érdemes az Alakzatládák előtt megvenni.
+- **Eseményláncolás:** Nyiss egy eseményládát közvetlenül egy nagy kombó előtt, hogy megsokszorozd a lendületed. Az Időbefagyasztás alatt a kész vonalak a fagyás végén egyetlen nagy kombóként fizetődnek ki.
+- **Készletgazdálkodás:** Tarts egy keveréket olcsó töltelékdarabokból és drága erődarabokból, hogy bármilyen rácsállapothoz alkalmazkodni tudj, és ne hagyd, hogy a készlet megteljen olyan alakzatokkal, amelyek már nem férnek el a táblán.
 
 ---
 
@@ -149,6 +178,15 @@ Az Idle Tetris a **türelem, a precizitás és egy csipetnyi szerencse** játék
 > *"A legjobb játékosok nemcsak reagálnak – felkészülnek."*
 
 Most pedig indulj, helyezd el a blokkjaidat, és legyen a véletlenszám-generátor mindig a javadra.
+
+---
+
+## 📚 Dokumentáció
+
+- [Játékkoncepció és projekt-bemutatkozás](Documentations/Game_Concept.md)
+- [Adatbázis (ER diagram és táblák)](Documentations/SQL_Diagram.md)
+- [Fejlesztői dokumentáció](Documentations/Developer.md)
+- [Webszerver (NGiNX + PHP)](Game/web/README.md) és [json-server](Game/json/README.md)
 
 ---
 
