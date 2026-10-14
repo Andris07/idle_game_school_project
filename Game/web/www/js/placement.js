@@ -1,5 +1,5 @@
 import { fetchDb, postDb, putDbById, deleteDbById } from "./data.js";
-import { refreshInventory, getInventoryItem } from "./app.js";
+import { refreshInventory, getInventoryItem, removeInventoryItem } from "./app.js";
 import { addMoney, updatePassiveIncome } from "./money.js";
 import { isGridFrozen, getLineRewardMultiplier, onEventEnd } from "./events.js";
 import { showMessagePopup } from "./popup.js";
