@@ -1,4 +1,4 @@
-import { fetchDb, putDb } from "./data.js";
+import { fetchDb, putDb, setAfterWrite } from "./data.js";
 
 const playerMoneyElement = document.querySelector("#player-money");
 
@@ -114,6 +114,14 @@ function persistMoney(keepalive = false)
 
     return saveQueue;
 }
+
+setAfterWrite(async () =>
+{
+    if (!gameSession) return;
+
+    accrueIncome();
+    await persistMoney();
+});
 
 // before new game session is created, we need to wait for any pending money saves to finish, otherwise the new session might overwrite the old one
 export async function waitForPendingSaves()

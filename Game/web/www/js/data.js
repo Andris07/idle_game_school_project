@@ -1,5 +1,12 @@
 export const BASE_URL = `${location.protocol}//${location.hostname}:3000`;
 
+let afterWrite = null;
+
+export function setAfterWrite(callback)
+{
+    afterWrite = callback;
+}
+
 async function request(method, path, body, { keepalive = false } = {})
 {
     const hasBody = body !== undefined;
@@ -23,7 +30,22 @@ async function request(method, path, body, { keepalive = false } = {})
     }
 
     const text = await response.text();
-    return text ? JSON.parse(text) : null;
+    const result = text ? JSON.parse(text) : null;
+
+    if (method !== "GET" && path !== "GAME_SESSION" && !path.startsWith("GAME_SESSION/") && afterWrite)
+    {
+        try
+        {
+            await afterWrite();
+        }
+        catch (error)
+        {
+            // The data write already succeeded; don't make callers treat it as failed and roll it back.
+            console.error(`Could not save money after ${method} /${path}: `, error);
+        }
+    }
+
+    return result;
 }
 
 export const fetchDb = (dbName) => request("GET", dbName);
