@@ -68,6 +68,21 @@ export function getInventoryItem(inventoryItemId)
     };
 }
 
+export function removeInventoryItem(inventoryItemId)
+{
+    const index = inventory.findIndex((item) => String(item.inventoryItemId) === String(inventoryItemId));
+
+    if (index < 0) return;
+
+    inventory.splice(index, 1);
+
+    const element = Array.from(inventoryElement.children).find(
+        (item) => String(item.dataset.inventoryItemId) === String(inventoryItemId)
+    );
+    element?.remove();
+    updateChestButton();
+}
+
 export async function refreshInventory()
 {
     const token = ++refreshToken;

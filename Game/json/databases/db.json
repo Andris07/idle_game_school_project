@@ -215,14 +215,6 @@
     }
   ],
   "INVENTORY_ITEM": [],
-  "BOARD_CELL": [
-    {
-      "id": "0",
-      "x_coord": 0,
-      "y_coord": 0,
-      "occupied": false
-    }
-  ],
   "PLACEMENT": [],
   "$schema": "./node_modules/json-server/schema.json"
 }
