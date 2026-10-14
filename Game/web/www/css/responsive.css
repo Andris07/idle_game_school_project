@@ -115,10 +115,9 @@
     #popup-window,
     #popup-overlay,
     .popup-icon,
-    .event-icon,
-    .playgrid-grid .play-cell-clearing
+    .event-icon
     {
-        animation-duration: 1ms;
+        animation: none;
     }
 }
 

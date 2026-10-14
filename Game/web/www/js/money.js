@@ -10,7 +10,6 @@ let incomeTimer = null;
 let lastTickAt = 0;
 let saveQueue = Promise.resolve();
 let incomeBoost = null; // { multiplier, startsAt, endsAt } while an event (Gold Rush) changes the passive income
-let lineRewardAnimation = null;
 
 function sumPlacementValues(placements)
 {
@@ -67,31 +66,6 @@ export function getMoney()
 export function getGameSession()
 {
     return gameSession;
-}
-
-export function showLineReward(amount)
-{
-    const reward = Number(amount);
-    if (!Number.isFinite(reward) || reward <= 0) return;
-
-    lineRewardPopup.textContent = `+${formatMoney(reward)} $`;
-    lineRewardPopup.hidden = false;
-    lineRewardAnimation?.cancel();
-    lineRewardAnimation = lineRewardPopup.animate(
-        [
-            { opacity: 0, transform: "translateY(-35%) scale(0.9)" },
-            { opacity: 1, transform: "translateY(-50%) scale(1)", offset: 0.15 },
-            { opacity: 1, transform: "translateY(-50%) scale(1)", offset: 0.75 },
-            { opacity: 0, transform: "translateY(-75%) scale(1.05)" },
-        ],
-        { duration: 1800, easing: "ease-out" }
-    );
-
-    lineRewardAnimation.onfinish = () =>
-    {
-        lineRewardPopup.hidden = true;
-        lineRewardAnimation = null;
-    };
 }
 
 // Used by events.js (Gold Rush). Everything earned so far is settled with the old boost first, then the new one is applied.
