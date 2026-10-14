@@ -596,6 +596,23 @@ body[data-event="double_shape"] #inventory
     border-color: var(--secondary);
 }
 
+.playgrid-grid .play-cell-clearing
+{
+    animation: clear-cell-bounce 620ms cubic-bezier(0.34, 1.56, 0.64, 1) both;
+    transform-origin: center;
+    z-index: 1;
+}
+
+@keyframes clear-cell-bounce
+{
+    0% { opacity: 1; transform: scale(1); }
+    22% { opacity: 1; transform: scale(0.72); }
+    43% { opacity: 1; transform: scale(1.12); }
+    62% { opacity: 0.9; transform: scale(0.82); }
+    78% { opacity: 0.65; transform: scale(1.04); }
+    100% { opacity: 0; transform: scale(0); }
+}
+
 .playgrid-grid .play-cell-preview-valid
 {
     background-color: var(--valid-soft);

@@ -1,5 +1,5 @@
 import { fetchDb, postDb, putDbById, deleteDbById } from "./data.js";
-import { refreshInventory, getInventoryItem } from "./app.js";
+import { refreshInventory, getInventoryItem, removeInventoryItem } from "./app.js";
 import { addMoney, showLineReward, updatePassiveIncome } from "./money.js";
 import { isGridFrozen, getLineRewardMultiplier, onEventEnd } from "./events.js";
 import { showMessagePopup } from "./popup.js";
@@ -172,10 +172,53 @@ function getCompletedLineReward(completedLines, boardSize)
     return totalReward * comboMultiplier * getLineRewardMultiplier();
 }
 
+function animateClearedCells(completedLines)
+{
+    renderPlacements();
+
+    const board = getBoard();
+    if (!board) return Promise.resolve();
+
+    const rows = new Set(completedLines.rows);
+    const columns = new Set(completedLines.columns);
+    const cells = board.cells.filter((cell, index) =>
+    {
+        if (!cell.classList.contains("play-cell-filled")) return false;
+
+        const row = Math.floor(index / board.size);
+        const column = index % board.size;
+
+        return rows.has(row) || columns.has(column);
+    });
+
+    if (cells.length === 0) return Promise.resolve();
+
+    const animations = cells.map((cell) => new Promise((resolve) =>
+    {
+        const finish = (event) =>
+        {
+            if (event && event.target !== cell) return;
+
+            cell.removeEventListener("animationend", finish);
+            clearTimeout(timeout);
+            resolve();
+        };
+        const timeout = setTimeout(() => finish(), 800);
+
+        cell.addEventListener("animationend", finish);
+    }));
+
+    cells.forEach((cell) => cell.classList.add("play-cell-clearing"));
+
+    return Promise.all(animations);
+}
+
 async function clearCompletedLines(completedLines)
 {
     const rows = new Set(completedLines.rows);
     const columns = new Set(completedLines.columns);
+
+    await animateClearedCells(completedLines);
 
     for (const placement of placements)
     {
@@ -216,7 +259,7 @@ function renderPlacements()
 
     board.cells.forEach((cell) =>
     {
-        cell.classList.remove("play-cell-filled");
+        cell.classList.remove("play-cell-filled", "play-cell-clearing");
         delete cell.dataset.placementId;
     });
 
@@ -490,16 +533,6 @@ async function dropOnBoard(data, target)
     finally
     {
         isSaving = false;
-
-        try
-        {
-            await refreshInventory();
-        }
-        catch (error)
-        {
-            console.error("Could not refresh inventory: ", error);
-        }
-
         notifyBoardChange();
     }
 }
@@ -539,6 +572,7 @@ async function placeShape(data, target)
         }
 
         await deleteDbById("INVENTORY_ITEM", data.inventoryItemId);
+        removeInventoryItem(data.inventoryItemId);
 
         placements.push(savedPlacement);
         savedPlacement = null;
@@ -587,6 +621,15 @@ async function placeShape(data, target)
         catch (reloadError)
         {
             console.error("Could not reload placements: ", reloadError);
+        }
+
+        try
+        {
+            await refreshInventory();
+        }
+        catch (refreshError)
+        {
+            console.error("Could not refresh inventory: ", refreshError);
         }
     }
 }
