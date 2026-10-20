@@ -1,0 +1,164 @@
+.info-icon
+{
+    width: 22px;
+    height: 22px;
+    display: block;
+    filter: var(--filter-accent);
+    transition: transform 0.2s ease;
+}
+
+#info-button:hover .info-icon
+{
+    transform: scale(1.1);
+}
+
+#popup-window.stats-popup
+{
+    width: min(92%, 460px);
+    gap: 12px;
+    padding: 28px 24px;
+    text-align: left;
+}
+
+.stats-popup h2
+{
+    text-align: center;
+}
+
+.stats-section
+{
+    border: 1px solid var(--accent);
+    border-radius: 10px;
+    overflow: hidden;
+    background-color: var(--surface);
+}
+
+.stats-section-title
+{
+    padding: 6px 14px;
+    font-family: "Arial Black", sans-serif;
+    font-size: 12px;
+    font-weight: normal;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    color: var(--accent);
+    background-color: color-mix(in srgb, var(--accent) 16%, transparent);
+}
+
+.stats-rows
+{
+    margin: 0;
+    padding: 4px 14px;
+}
+
+.stats-row
+{
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    padding: 7px 0;
+}
+
+.stats-row + .stats-row
+{
+    border-top: 1px solid color-mix(in srgb, var(--accent) 25%, transparent);
+}
+
+.stats-row dt
+{
+    font-family: "Arial Black", sans-serif;
+    font-size: 12px;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    opacity: 0.85;
+}
+
+.stats-row dd
+{
+    margin: 0;
+    font-family: "Arial Black", sans-serif;
+    font-size: 15px;
+    text-align: right;
+    color: var(--secondary);
+}
+
+.stats-row-money dd
+{
+    color: var(--green);
+}
+
+.stats-chest-grid
+{
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 8px;
+    padding: 10px 14px 6px;
+}
+
+.stats-chest
+{
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+    padding: 10px 4px;
+    border-radius: 8px;
+    background-color: color-mix(in srgb, var(--accent) 12%, transparent);
+}
+
+.stats-chest-name
+{
+    font-family: "Arial Black", sans-serif;
+    font-size: 11px;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    text-align: center;
+    opacity: 0.85;
+}
+
+.stats-chest-count
+{
+    font-family: "Arial Black", sans-serif;
+    font-size: 28px;
+    line-height: 1;
+    color: var(--secondary);
+    text-shadow: 0 0 12px var(--secondary-glow);
+}
+
+.stats-total
+{
+    padding: 2px 14px 10px;
+    font-family: "Arial Black", sans-serif;
+    font-size: 11px;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    text-align: center;
+    opacity: 0.75;
+}
+
+@media only screen and (max-width: 480px)
+{
+    #popup-window.stats-popup
+    {
+        padding: 22px 14px;
+        gap: 10px;
+    }
+
+    .stats-chest-grid
+    {
+        gap: 6px;
+        padding: 8px 10px 4px;
+    }
+
+    .stats-chest-name
+    {
+        font-size: 10px;
+    }
+
+    .stats-chest-count
+    {
+        font-size: 24px;
+    }
+}
