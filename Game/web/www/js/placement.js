@@ -1,6 +1,6 @@
 import { fetchDb, postDb, putDbById, deleteDbById } from "./data.js";
-import { refreshInventory, getInventoryItem } from "./app.js";
-import { addMoney, updatePassiveIncome } from "./money.js";
+import { refreshInventory, getInventoryItem, removeInventoryItem } from "./app.js";
+import { addMoney, updatePassiveIncome, showLineReward } from "./money.js";
 import { isGridFrozen, getLineRewardMultiplier, onEventEnd } from "./events.js";
 import { showMessagePopup } from "./popup.js";
 
@@ -170,6 +170,47 @@ function getCompletedLineReward(completedLines, boardSize)
     const comboMultiplier = Math.max(2, 1 + 0.25 * (lineRewards.length - 1));
 
     return totalReward * comboMultiplier * getLineRewardMultiplier();
+}
+
+function animateClearedCells(completedLines)
+{
+    renderPlacements();
+
+    const board = getBoard();
+    if (!board) return Promise.resolve();
+
+    const rows = new Set(completedLines.rows);
+    const columns = new Set(completedLines.columns);
+    const cells = board.cells.filter((cell, index) =>
+    {
+        if (!cell.classList.contains("play-cell-filled")) return false;
+
+        const row = Math.floor(index / board.size);
+        const column = index % board.size;
+
+        return rows.has(row) || columns.has(column);
+    });
+
+    if (cells.length === 0) return Promise.resolve();
+
+    const animations = cells.map((cell) => new Promise((resolve) =>
+    {
+        const finish = (event) =>
+        {
+            if (event && event.target !== cell) return;
+
+            cell.removeEventListener("animationend", finish);
+            clearTimeout(timeout);
+            resolve();
+        };
+        const timeout = setTimeout(() => finish(), 800);
+
+        cell.addEventListener("animationend", finish);
+    }));
+
+    cells.forEach((cell) => cell.classList.add("play-cell-clearing"));
+
+    return Promise.all(animations);
 }
 
 async function clearCompletedLines(completedLines)
@@ -617,7 +658,10 @@ async function settleFrozenLines()
             await clearCompletedLines(completedLines);
             updatePassiveIncome(placements);
 
-            if (lineReward > 0) await addMoney(lineReward);
+            if (lineReward > 0) {
+                await addMoney(lineReward);
+                showLineReward(lineReward);
+            }
 
             showMessagePopup("Time Freeze ended",
             [
