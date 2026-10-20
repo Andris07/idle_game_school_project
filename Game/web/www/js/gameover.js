@@ -1,6 +1,6 @@
 import { fetchDb } from "./data.js";
 import { showMessagePopup } from "./popup.js";
-import { getMoney, getGameSession, formatMoney } from "./money.js";
+import { getMoney, getGameSession, getPausedMs, formatMoney } from "./money.js";
 import { getBoardSnapshot } from "./placement.js";
 import { getInventoryShapes, getBaseShapes } from "./app.js";
 import { isGridFrozen } from "./events.js";
@@ -102,7 +102,7 @@ async function collectResult(boardSize)
     }
 
     const startedAt = Date.parse(session?.started_at);
-    const playTime = Number.isFinite(startedAt) ? formatPlayTime(Date.now() - startedAt) : "-";
+    const playTime = Number.isFinite(startedAt) ? formatPlayTime(Date.now() - startedAt - getPausedMs()) : "-";
 
     return [
         ["Difficulty", difficultyText],
