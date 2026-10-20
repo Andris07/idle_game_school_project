@@ -1,14 +1,18 @@
 import { fetchDb, putDb, setAfterWrite } from "./data.js";
+import { recordCombo } from "./stats.js";
 
 const playerMoneyElement = document.querySelector("#player-money");
 const lineRewardPopup = document.querySelector("#line-reward-popup");
 
 let gameSession = null;
 let money = 0;
+let totalEarned = 0;
 let passiveIncome = 0;
 let incomeTimer = null;
 let lastTickAt = 0;
 let saveQueue = Promise.resolve();
+let pausedAt = null; // set while the game is paused (info popup): no passive income is paid
+let pausedMs = 0;    // how long this game was paused in total (the played time does not contain it)
 let incomeBoost = null; // { multiplier, startsAt, endsAt } while an event (Gold Rush) changes the passive income
 let lineRewardAnimation = null;
 
@@ -69,6 +73,42 @@ export function getGameSession()
     return gameSession;
 }
 
+export function getTotalEarned()
+{
+    return totalEarned;
+}
+
+export function getPausedMs()
+{
+    return pausedMs + (pausedAt === null ? 0 : Date.now() - pausedAt);
+}
+
+export function pauseMoney()
+{
+    if (pausedAt !== null) return;
+
+    accrueIncome();
+    pausedAt = Date.now();
+}
+
+export function resumeMoney()
+{
+    if (pausedAt === null) return;
+
+    const delta = Date.now() - pausedAt;
+
+    pausedAt = null;
+    pausedMs += delta;
+    lastTickAt += delta;
+
+    if (incomeBoost)
+    {
+        incomeBoost = { ...incomeBoost, startsAt: incomeBoost.startsAt + delta, endsAt: incomeBoost.endsAt + delta };
+    }
+
+    renderMoney();
+}
+
 export function showLineReward(amount)
 {
     const reward = Number(amount);
@@ -106,14 +146,16 @@ export function setIncomeBoost(boost)
 // money is accrued every second, but we also need to account for the time elapsed since the last tick when the page was hidden or the user switched tabs
 function accrueIncome()
 {
-    if (incomeTimer === null) return;
+    if (incomeTimer === null || pausedAt !== null) return;
 
     const seconds = Math.floor((Date.now() - lastTickAt) / 1000);
     if (seconds <= 0) return;
 
     const from = lastTickAt;
     lastTickAt += seconds * 1000;
-    money += earnedBetween(from, lastTickAt);
+    const earned = earnedBetween(from, lastTickAt);
+    money += earned;
+    totalEarned += earned;
     renderMoney();
 }
 
@@ -125,6 +167,8 @@ function persistMoney(keepalive = false)
     {
         ...gameSession,
         money,
+        total_earned: totalEarned,
+        paused_ms: pausedMs,
         last_save_at: new Date().toISOString(),
     };
 
@@ -174,6 +218,9 @@ export function stopMoneySystem()
     // the boost is not touched here, it belongs to the running event (events.js clears it)
     gameSession = null;
     money = 0;
+    totalEarned = 0;
+    pausedAt = null;
+    pausedMs = 0;
     passiveIncome = 0;
     renderMoney();
 }
@@ -191,13 +238,18 @@ export async function startMoneySystem()
 
     gameSession = session;
     money = Math.max(0, Number(session.money) || 0);
+    totalEarned = Math.max(0, Number(session.total_earned) || 0);
+    pausedMs = Math.max(0, Number(session.paused_ms) || 0);
     passiveIncome = sumPlacementValues(placements);
 
     const lastSave = Date.parse(session.last_save_at);
     if (Number.isFinite(lastSave))
     {
         const elapsedSeconds = Math.max(0, Math.floor((Date.now() - lastSave) / 1000));
-        money += earnedBetween(lastSave, lastSave + elapsedSeconds * 1000);
+        const offlineEarned = earnedBetween(lastSave, lastSave + elapsedSeconds * 1000);
+
+        money += offlineEarned;
+        totalEarned += offlineEarned;
     }
 
     renderMoney();
@@ -214,6 +266,17 @@ export async function addMoney(amount)
     money = Math.max(0, money + value);
     renderMoney();
     await persistMoney();
+}
+
+export async function addReward(amount)
+{
+    const value = Number(amount);
+    if (!gameSession || !Number.isFinite(value) || value <= 0) return;
+
+    totalEarned += value;
+    recordCombo(value);
+
+    await addMoney(value);
 }
 
 export async function spendMoney(amount)

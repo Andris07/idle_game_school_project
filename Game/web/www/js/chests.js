@@ -4,6 +4,7 @@ import { refreshInventory, isInventoryFull, getFreeInventorySlots } from "./app.
 import { showMessagePopup } from "./popup.js";
 import { loadEventTypes, queueEvent, startPendingEvent, isEventBusy, onEventChange, getShapeCopies, formatEventDuration } from "./events.js";
 import { checkGameOver } from "./gameover.js";
+import { recordChest } from "./stats.js";
 
 const SHAPE_CHEST_COST = 100;
 const UPGRADE_CHEST_COST = 2500;
@@ -84,6 +85,7 @@ shapeChestButton.addEventListener("click", async () =>
         }
 
         shouldRefund = false;
+        await recordChest("shape");
         await refreshInventory();
     }
     catch (error)
@@ -130,6 +132,7 @@ upgradeChestButton.addEventListener("click", async () =>
         await putDbById("SHAPE", shape.id, { ...shape, base_value: newValue });
 
         shouldRefund = false;
+        await recordChest("upgrade");
 
         showResult("Upgrade Chest",
         [
@@ -181,6 +184,7 @@ buffChestButton.addEventListener("click", async () =>
         const definition = await queueEvent(type);
 
         shouldRefund = false;
+        await recordChest("buff");
 
         showMessagePopup("Buff Chest",
         [

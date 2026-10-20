@@ -20,7 +20,17 @@
     "id": "0",
     "difficulty_id": null,
     "money": 0,
-    "last_save_at": ""
+    "total_earned": 0,
+    "paused_ms": 0,
+    "last_save_at": "",
+    "started_at": ""
+  },
+  "GAME_STATS": {
+    "id": "0",
+    "shape_chests": 0,
+    "upgrade_chests": 0,
+    "buff_chests": 0,
+    "best_combo": 0
   },
   "EVENT_TYPE": [
     {

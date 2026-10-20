@@ -1,6 +1,6 @@
 import { fetchDb, postDb, putDbById, deleteDbById } from "./data.js";
 import { refreshInventory, getInventoryItem, removeInventoryItem } from "./app.js";
-import { addMoney, updatePassiveIncome, showLineReward } from "./money.js";
+import { addReward, updatePassiveIncome, showLineReward } from "./money.js";
 import { isGridFrozen, getLineRewardMultiplier, onEventEnd } from "./events.js";
 import { showMessagePopup } from "./popup.js";
 
@@ -603,7 +603,7 @@ async function placeShape(data, target)
 
         if (lineReward > 0)
         {
-            await addMoney(lineReward);
+            await addReward(lineReward);
             showLineReward(lineReward);
         }
     }
@@ -659,7 +659,7 @@ async function settleFrozenLines()
             updatePassiveIncome(placements);
 
             if (lineReward > 0) {
-                await addMoney(lineReward);
+                await addReward(lineReward);
                 showLineReward(lineReward);
             }
 
@@ -675,7 +675,7 @@ async function settleFrozenLines()
         }
         catch (refreshError)
         {
-            console.error("Could not settle the frozen lines: ", error);
+            console.error("Could not settle the frozen lines: ", refreshError);
         }
     });
 
