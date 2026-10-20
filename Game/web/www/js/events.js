@@ -58,6 +58,7 @@ let active = null;          // the running event: { name, typeId, definition, st
 let pending = null;         // opened from the chest, but the popup is still open, so it has not started yet
 let expiredOnLoad = null;   // an event that ran out while the page was closed, it is settled once the board is loaded
 let finishing = false;
+let pausedAt = null;        // set while the game is paused (info popup): the time of the running event stands still
 let tickTimer = null;
 let saveQueue = Promise.resolve();
 
@@ -108,6 +109,36 @@ export async function loadEventTypes()
     return types.filter((type) => EVENT_DEFINITIONS[type.name] && Number(type.duration_seconds) > 0);
 }
 
+function now()
+{
+    return pausedAt ?? Date.now();
+}
+
+export function pauseEvents()
+{
+    if (pausedAt !== null) return;
+
+    pausedAt = Date.now();
+}
+
+export function resumeEvents()
+{
+    if (pausedAt === null) return;
+
+    const delta = Date.now() - pausedAt;
+
+    pausedAt = null;
+
+    if (!active || delta <= 0) return;
+
+    active.startedAt += delta;
+    active.expiresAt += delta;
+    renderTimer();
+
+    saveEventRecord(toRecord(active.typeId, active.definition, active.startedAt, active.expiresAt))
+        .catch((error) => console.error("Could not save the resumed event: ", error));
+}
+
 /* ---------- display (icon + remaining time in the menu) ---------- */
 
 function formatTimer(totalSeconds)
@@ -137,7 +168,7 @@ function renderTimer()
         return;
     }
 
-    const remainingSeconds = Math.max(0, Math.ceil((active.expiresAt - Date.now()) / 1000));
+    const remainingSeconds = Math.max(0, Math.ceil((active.expiresAt - now()) / 1000));
     const text = formatTimer(remainingSeconds);
 
     // the timer ticks more often than once a second, so the DOM is only touched when the text changes
@@ -228,9 +259,9 @@ function beginEvent(info)
 
 function tick()
 {
-    if (!active) return;
+    if (!active || pausedAt !== null) return;
 
-    if (Date.now() >= active.expiresAt)
+    if (now() >= active.expiresAt)
     {
         finishActiveEvent();
         return;
@@ -343,7 +374,7 @@ export function getActiveEvent()
 // value of the running event's effect, or the fallback if the running event has a different effect
 function getEffect(effect, fallback)
 {
-    if (!active || Date.now() >= active.expiresAt) return fallback;
+    if (!active || now() >= active.expiresAt) return fallback;
 
     return active.definition.effect === effect ? active.definition.effectValue : fallback;
 }
@@ -466,6 +497,7 @@ export async function resetEvents()
     pending = null;
     expiredOnLoad = null;
     finishing = false;
+    pausedAt = null;
 
     setIncomeBoost(null);
     renderEventState();

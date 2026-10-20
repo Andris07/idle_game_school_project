@@ -1,9 +1,10 @@
 import { fetchDb, putDb, putDbById, deleteDbById } from "./data.js";
-import { showGridPopup, addNewGameButton } from "./popup.js";
-import { startMoneySystem, stopMoneySystem, waitForPendingSaves } from "./money.js";
+import { showGridPopup, addNewGameButton, addInfoButton, showStatsPopup, showMessagePopup } from "./popup.js";
+import { startMoneySystem, stopMoneySystem, waitForPendingSaves, getGameSession, getTotalEarned, getPausedMs, pauseMoney, resumeMoney, formatMoney } from "./money.js";
+import { loadStats, getStats, resetStats } from "./stats.js";
 import { refreshInventory } from "./app.js";
 import { loadPlacements, resetPlacements, onBoardChange } from "./placement.js";
-import { restoreEvent, settleExpiredEvent, resetEvents } from "./events.js";
+import { restoreEvent, settleExpiredEvent, resetEvents, pauseEvents, resumeEvents } from "./events.js";
 import { initGameOver, resetGameOver, checkGameOver } from "./gameover.js";
 import "./chests.js";
 
@@ -16,7 +17,7 @@ let isRestarting = false;
 function createSession(difficulty_id = null, money = 0)
 {
     // started_at is the start of the game, the game over result shows how long it lasted
-    return { id: "0", difficulty_id, money, last_save_at: "", started_at: difficulty_id == null ? "" : new Date().toISOString() };
+    return { id: "0", difficulty_id, money, total_earned: 0, paused_ms: 0, last_save_at: "", started_at: difficulty_id == null ? "" : new Date().toISOString() };
 }
 
 export async function loadGameSession()
@@ -53,6 +54,15 @@ export async function clearGameSession()
     catch (error)
     {
         console.error("Could not reset the events: ", error);
+    }
+
+    try
+    {
+        await resetStats();
+    }
+    catch (error)
+    {
+        console.error("Could not reset the statistics: ", error);
     }
 
     await putDb("GAME_SESSION", createSession());
@@ -139,14 +149,86 @@ async function restartGame()
     showGridPopup(startGame);
 }
 
+function formatPlayTime(milliseconds)
+{
+    const totalSeconds = Math.max(0, Math.floor(milliseconds / 1000));
+    const hours = Math.floor(totalSeconds / 3600);
+    const minutes = Math.floor((totalSeconds % 3600) / 60);
+    const seconds = totalSeconds % 60;
+
+    if (hours > 0) return `${hours}h ${String(minutes).padStart(2, "0")}m ${String(seconds).padStart(2, "0")}s`;
+    if (minutes > 0) return `${minutes}m ${String(seconds).padStart(2, "0")}s`;
+
+    return `${seconds}s`;
+}
+
+// Game info popup: can be opened at any time, the game keeps running behind it
+async function openGameInfo()
+{
+    const session = getGameSession();
+
+    if (!session)
+    {
+        showMessagePopup("Game info", ["No game is running yet. Start a game first."]);
+        return;
+    }
+
+    let difficultyText = "-";
+
+    try
+    {
+        const difficulties = await fetchDb("DIFFICULTY");
+        const difficulty = difficulties.find((d) => String(d.id) === String(session.difficulty_id));
+
+        if (difficulty) difficultyText = `${difficulty.name} (${difficulty.grid_size}×${difficulty.grid_size})`;
+    }
+    catch (error)
+    {
+        console.error("Could not load the difficulty for the game info: ", error);
+    }
+
+    const startedAt = Date.parse(session.started_at);
+    const stats = getStats();
+
+    showStatsPopup(
+    {
+        difficulty: difficultyText,
+        startedAt: Number.isFinite(startedAt) ? new Date(startedAt).toLocaleString() : "-",
+        playTime: Number.isFinite(startedAt) ? formatPlayTime(Date.now() - startedAt - getPausedMs()) : "-",
+        chests:
+        {
+            shape: stats.shape_chests,
+            upgrade: stats.upgrade_chests,
+            buff: stats.buff_chests,
+        },
+        totalEarned: `${formatMoney(getTotalEarned())} $`,
+        bestCombo: stats.best_combo > 0 ? `${formatMoney(stats.best_combo)} $` : "-",
+
+        // while the window is open, the game is paused: no passive income, the quick time event does not run out
+        onOpen: () =>
+        {
+            pauseMoney();
+            pauseEvents();
+        },
+        onClose: () =>
+        {
+            resumeMoney();
+            resumeEvents();
+        },
+    });
+}
+
 (async function initGame()
 {
     addNewGameButton(restartGame);
+    addInfoButton(openGameInfo);
     initGameOver({ onRestart: restartGame });
     onBoardChange(checkGameOver);
 
     try
     {
+        await loadStats();
+
         const size = await loadGameSession();
 
         if (!size)
