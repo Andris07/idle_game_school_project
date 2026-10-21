@@ -6,6 +6,8 @@ describe('Tetris chests', () =>
 
         // a game has to be running (fresh database): choose the difficulty and start, if a game is already saved, the line below should be commented out
         // cy.get('#start-game-button').click();
+        cy.get('#new-game-button').click();
+        cy.get('#start-game-button').click();
     });
 
     it('chest prices are shown on the buttons', () =>
