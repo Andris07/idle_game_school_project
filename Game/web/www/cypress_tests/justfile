@@ -1,0 +1,31 @@
+set shell := ["powershell.exe", "-NoLogo", "-Command"]
+
+# Install dependencies from package-lock.json
+
+install:
+  npm ci
+
+# Install Cypress as a development dependency
+
+install-cypress:
+  npm install --save-dev cypress
+
+# Verify the Cypress binary installation
+
+verify:
+  npx cypress verify
+
+# Open the interactive Cypress E2E test runner
+
+open:
+  npx cypress open
+
+# Run all E2E tests in headless mode
+
+test:
+  npx cypress run
+
+# Run tests in a specific browser
+
+test-browser browser="chrome":
+  npx cypress run --browser {{browser}}
