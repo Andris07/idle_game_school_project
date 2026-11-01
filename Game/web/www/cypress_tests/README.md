@@ -43,6 +43,18 @@ npm install --save-dev cypress
 
 This installs Cypress as a development dependency and generates or updates `package-lock.json`.
 
+```bash
+npm install-scripts approve cypress
+```
+
+Use this before installation if certain scripts get blocked.
+
+```bash
+npx cypress install
+```
+
+This command will download the binary if it is missing or verify that it is already there, and it is a safe step to take after approving the script.
+
 ### 4. Open Cypress
 
 ```bash
