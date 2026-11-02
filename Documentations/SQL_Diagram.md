@@ -14,7 +14,6 @@ erDiagram
     GAME_SESSION ||--o| GAME_EVENT : activates
     EVENT_TYPE ||--o{ GAME_EVENT : classifies
 
-
     DIFFICULTY {
         INT id PK
         VARCHAR name
@@ -25,6 +24,8 @@ erDiagram
         INT id PK
         INT difficulty_id FK
         DECIMAL money
+        DECIMAL total_earned
+        INT paused_ms
         DATETIME last_save_at
         DATETIME started_at
     }
@@ -66,4 +67,10 @@ erDiagram
         DATETIME expires_at
     }
 
-```
+    GAME_STATS {
+        INT id PK
+        INT shape_chests
+        INT upgrade_chests
+        INT buff_chests
+        DECIMAL best_combo
+    }
