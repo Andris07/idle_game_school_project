@@ -40,9 +40,9 @@ A weboldal egy **teljes értékű, interaktív játékalkalmazás**, amely a kö
 | 🧩 **Sor/oszlop teljesítés** | Teljes sorok vagy oszlopok eltűnnek és jutalmat adnak (az érintett alakzatok értékösszege × darabszámuk), egyszerre több vonal esetén kombó szorzóval |
 | 🎁 **Láda rendszer** | Háromféle láda (Shape 100 $, Upgrade 2500 $, Buff 5000 $) véletlenszerű tartalommal, az eredményt felugró ablak mutatja |
 | 📦 **Raktárkészlet** | Az összes megszerzett alakzat tárolása és kezelése, csak 8 férőhely |
-| ⏳ **Időzített események** | A Buff ládából nyerhető, percekben és másodpercekben mért időkorlátos hatások (Aranyláz, Dupla alakzat, Időbefagyasztás, Értékrobbanás), a hátralévő idő a menüsávban látható |
+| ⏳ **Időzített események** | A Buff ládából nyerhető, percekben és másodpercekben mért időkorlátos hatások (Aranyláz, Dupla alakzat, Időbefagyasztás, Értékrobbanás). Egyszerre csak egy esemény lehet aktív, az időzítő a popup bezárásakor indul, a hátralévő idő a menüsávban látható |
 | 💀 **Játék vége** | Ha a készlet megtelt és egyik alakzat sem fér el a táblán, összegző ablak jelenik meg, majd új játék indul |
-| 💾 **Szerver oldali mentés** | A teljes játékállás (pénz, készlet, tábla, futó esemény) a json-serverben van, így frissítés után is folytatható |
+| 💾 **Szerver oldali mentés** | A teljes játékállás (pénz, készlet, tábla, futó esemény, statisztika) a json-serverben van, így frissítés után is folytatható. Egyedül a téma van a `localStorage`-ban. |
 | 📱 **Reszponzív dizájn** | Asztali és mobil eszközökön is teljes mértékben működőképes |
 
 ---
