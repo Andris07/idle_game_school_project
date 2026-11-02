@@ -13,12 +13,12 @@ Game/
 └── web/                  nginx (Docker)
     └── www/              maga a játék
         ├── index.html
-        ├── css/          style, colors, layout, responsive
-        ├── js/           data, theme, popup, game, app, money, placement, chests, events, gameover
+        ├── css/          style, colors, layout, responsive, stats
+        ├── js/           data, theme, popup, game, app, money, placement, chests, events, gameover, stats
         └── src/          képek, ikonok
 ```
 
-A frontend sima HTML, CSS és JavaScript (ES modulok), nincs framework és build lépés. A játék állapotát (pénz, készlet, tábla, futó esemény) nem a böngésző tárolja, hanem a json-server, ezért az oldal frissítése után is folytatható a játék. Egyedül a téma van a `localStorage`-ban.
+A frontend sima HTML, CSS és JavaScript (ES modulok), nincs framework és build lépés. A játék állapotát (pénz, készlet, tábla, futó esemény, statisztika) nem a böngésző tárolja, hanem a json-server, ezért az oldal frissítése után is folytatható a játék. Egyedül a téma van a `localStorage`-ban.
 
 ## Futtatás
 
@@ -43,7 +43,7 @@ Fontos, hogy a játék a `db.json` fájlba ír, mert az be van mountolva a kont�
 
 ## Adatbázis röviden
 
-A [db.json](../Game/json/databases/db.json) minden kulcsából a json-server végpontot csinál (`GET /SHAPE`, `PUT /SHAPE/1` stb.). A `GAME_SESSION` és a `GAME_EVENT` objektum, nem lista, ezért ezeket id nélkül kell lekérni és `PUT`-olni (`putDb`). A táblák részletes leírása az [SQL_Diagram.md](SQL_Diagram.md)-ben van.
+A [db.json](../Game/json/databases/db.json) minden kulcsából a json-server végpontot csinál (`GET /SHAPE`, `PUT /SHAPE/1` stb.). A `GAME_SESSION`, a `GAME_EVENT` és a `GAME_STATS` objektum, nem lista, ezért ezeket id nélkül kell lekérni és `PUT`-olni (`putDb`). A táblák részletes leírása az [SQL_Diagram.md](SQL_Diagram.md)-ben van.
 
 Az alakzatok cellái egy 4×4-es dobozon belüli `[oszlop, sor]` párok, például a T alakzat:
 
@@ -63,12 +63,13 @@ Függőségek egy pillantásra (nyíl: importálja):
 
 ```
 game.js ──► popup.js ──► data.js
-   ├──────► money.js ──► data.js
+   ├──────► money.js ──► data.js, stats.js
    ├──────► app.js ────► data.js
    ├──────► events.js ─► data.js, money.js
    ├──────► gameover.js ► data.js, popup.js, money.js, placement.js, app.js, events.js
    ├──────► placement.js ► data.js, app.js, money.js, events.js, popup.js
-   └──────► chests.js ─► data.js, money.js, app.js, popup.js, events.js, gameover.js
+   ├──────► stats.js ──► data.js
+   └──────► chests.js ─► data.js, money.js, app.js, popup.js, events.js, gameover.js, stats.js
 ```
 
 A `game.js` az egyetlen belépési pont: ő köti össze a modulokat (`initGameOver`, `onBoardChange(checkGameOver)`, `addNewGameButton`), a többi modul egymásnak callbackeket (`onBoardChange`, `onEventEnd`, `onEventChange`, `setAfterWrite`) adva kommunikál, hogy ne legyen körkörös import.
@@ -81,7 +82,7 @@ A json-server felé menő `fetch` hívások egy helyen: `fetchDb`, `postDb`, `pu
 - **hibát dob**, ha a HTTP státusz nem sikeres (`GET /path -> 404 ...` formátumú üzenettel), tehát a hívóknak `try/catch`-et kell használniuk,
 - üres válasznál (pl. `DELETE`) `null`-t ad vissza,
 - támogatja a `keepalive` beállítást (a `putDb` harmadik paramétere), amit az oldal elhagyásakori mentés használ,
-- minden **sikeres, nem `GET` és nem `GAME_SESSION`-re irányuló** írás után meghívja a `setAfterWrite()`-tel regisztrált callbacket (ezt a `money.js` használja: mentés előtt jóváírja a felgyűlt jövedelmet és elmenti a pénzt). A callback hibája csak a konzolra kerül, az adatírás nem számít sikertelennek.
+- minden **sikeres, nem `GET` és nem `GAME_SESSION`-re irányuló** írás után meghívja a `setAfterWrite()`-tel regisztrált callbacket (ezt a `money.js` használja: mentés előtt jóváírja a felgyűlt jövedelmet és elmenti a pénzt). A `GAME_SESSION` kizárása a `path !== "GAME_SESSION"` és a `!path.startsWith("GAME_SESSION/")` feltétellel történik, tehát a `GAME_SESSION/{id}` alakú útvonalak is kimaradnak. A callback hibája csak a konzolra kerül, az adatírás nem számít sikertelennek.
 
 ### [theme.js](../Game/web/www/js/theme.js)
 
@@ -99,7 +100,9 @@ Az összes felugró ablak itt van, **egyetlen sorban**: egyszerre csak egy popup
   - `closeLabel`: a gomb szövege (alapértelmezés: `ok`),
   - `dismissible`: `false` esetén csak a gomb zárja be (Esc, Enter, háttérkattintás nem),
   - `onClose`: az ablak bezárása után hívódik meg.
+- `showStatsPopup(data)`: a „Game info" ablak (a menüsáv info gombja). A `data` objektum: `difficulty`, `startedAt`, `playTime`, `chests` (`{ shape, upgrade, buff }`), `totalEarned`, `bestCombo`, valamint `onOpen` és `onClose` callbackek. Az ablak megnyitásakor `onOpen` (a `game.js` itt pause-olja a pénzt és az eseményeket), bezárásakor `onClose` hívódik. Sosem kerül kétszer a sorba (`statsQueued` flag).
 - `addNewGameButton(onClick)`: újraindítás gomb a menühöz (`.menu-theme`).
+- `addInfoButton(onClick)`: az info gombhoz köti a callbacket.
 
 ### [game.js](../Game/web/www/js/game.js)
 
@@ -107,11 +110,13 @@ A játék indítása, újraindítása és a tábla kirajzolása:
 
 - `loadGameSession()` megnézi, van-e mentett játék, és visszaadja a hozzá tartozó tábla méretét.
 - `saveGameSession(difficulty_id)` új sessiont ment `STARTING_MONEY` (100) pénzzel és `started_at` időbélyeggel, majd elindítja a pénzrendszert.
-- `clearGameSession()` leállítja a pénzrendszert, megvárja a függő mentéseket, törli az eseményt (`resetEvents`), alaphelyzetbe állítja a sessiont, törli az összes inventory elemet és lerakott alakzatot, és **nullázza a `SHAPE` táblában az összes `base_value`-t** (a Fejlesztőláda hatása csak egy játékra szól). Ha valamelyik lépés nem sikerült, hibát dob.
+- `clearGameSession()` leállítja a pénzrendszert, megvárja a függő mentéseket, törli az eseményt (`resetEvents`), alaphelyzetbe állítja a statisztikát (`resetStats`), alaphelyzetbe állítja a sessiont, törli az összes inventory elemet és lerakott alakzatot, és **nullázza a `SHAPE` táblában az összes `base_value`-t** (a Fejlesztőláda hatása csak egy játékra szól). Ha valamelyik lépés nem sikerült, hibát dob.
 - `generatePlayGrid(size)` kiüríti a `#playgrid`-et és létrehoz egy `size × size` méretű rácsot `.play-cell` elemekből.
-- `startGame(difficulty)` és `restartGame()`: a popuphoz/gombhoz kötött függvények. A `restartGame` az `isRestarting` zászlóval védi magát a dupla indítástól, törli a régi állapotot (tábla, placementek, inventory), majd újra megnyitja a nehézségválasztó popupot. Mindkettő nullázza a game over állapotot (`resetGameOver`).
+- `startGame(difficulty)` és `restartGame()`: a popuphoz/gombhoz kötött függvények. A `restartGame` az `isRestarting` zászlóval védi magát a dupla indítástól, meghívja a `clearGameSession()`-t (ami a `SHAPE.base_value`-kat is nullázza), majd kiüríti a táblát, reseteli a placementeket, frissíti az inventoryt, és újra megnyitja a nehézségválasztó popupot. Mindkettő nullázza a game over állapotot (`resetGameOver`).
 
-Az `initGame()` induláskor bekötéseket végez (`addNewGameButton`, `initGameOver`, `onBoardChange(checkGameOver)`), majd vagy folytatja a mentett játékot, vagy megnyitja a popupot. A folytatás sorrendje számít: `restoreEvent()` → `startMoneySystem()` → tábla és `loadPlacements()` → `settleExpiredEvent()` → `checkGameOver()`. Az eseményt azért kell a pénzrendszer előtt betölteni, mert a távollét alatt gyűlt jövedelem kiszámításához tudni kell egy esetleges Aranylázról.
+Az `initGame()` induláskor bekötéseket végez (`addNewGameButton`, `addInfoButton`, `initGameOver`, `onBoardChange(checkGameOver)`), majd vagy folytatja a mentett játékot, vagy megnyitja a popupot. A folytatás sorrendje számít: `loadStats()` → `restoreEvent()` → `startMoneySystem()` → tábla és `loadPlacements()` → `settleExpiredEvent()` → `checkGameOver()`. Az eseményt azért kell a pénzrendszer előtt betölteni, mert a távollét alatt gyűlt jövedelem kiszámításához tudni kell egy esetleges Aranylázról.
+
+Az `openGameInfo()` a menüsáv info gombjára nyílik: összegyűjti a session adatait, a statisztikát (`getStats()`), a nehézséget, és meghívja a `showStatsPopup`-ot. Az ablak megnyitásakor `pauseMoney()` és `pauseEvents()`, bezárásakor `resumeMoney()` és `resumeEvents()` fut.
 
 ### [money.js](../Game/web/www/js/money.js)
 
@@ -121,9 +126,11 @@ A pénz és a passzív jövedelem modulja. Az állapot (`money`, `passiveIncome`
 - `stopMoneySystem()` leállítja az időzítőt és nullázza az állapotot (a boostot nem, az az eseményé).
 - `accrueIncome()` a legutóbbi tick óta eltelt **egész másodperceket** írja jóvá, így akkor is helyes marad, ha a böngésző a háttérben lelassítja az időzítőt. Az `earnedBetween()` kezeli, hogy a boost csak az esemény idejére vonatkozzon.
 - `setIncomeBoost({ multiplier, startsAt, endsAt })`: az `events.js` hívja Aranyláz indulásakor/végén (előbb az addig felgyűlt pénzt a régi boosttal számolja el).
-- `addMoney(amount)` és `spendMoney(cost)`: hozzáadás, illetve költés. A `spendMoney` `false`-t ad, ha nincs elég pénz, és hiba esetén visszaadja a levont összeget. Mindkettő elmenti a sessiont.
+- `addMoney(amount)` és `spendMoney(cost)`: hozzáadás, illetve költés. A `spendMoney` `false`-t ad, ha nincs aktív session, érvénytelen az összeg, vagy nincs elég pénz. Ha a mentés (`persistMoney`) elbukik, a memóriában visszaadja a levont összeget, majd **újradobja a hibát** – a hívó (`chests.js`) a `catch` ágban kezeli. Mindkettő elmenti a sessiont.
+- `addReward(amount)`: a `total_earned`-et is növeli, meghívja a `recordCombo`-t (`stats.js`), majd `addMoney`-t.
 - `updatePassiveIncome(placements)` a lerakott alakzatok alapján újraszámolja a jövedelmet.
-- `getMoney()`, `getGameSession()`, `formatMoney()`: a `gameover.js` használja az eredményablakhoz.
+- `getMoney()`, `getGameSession()`, `getTotalEarned()`, `getPausedMs()`, `formatMoney()`: a `gameover.js` és a `game.js` használja.
+- `pauseMoney()` / `resumeMoney()`: az info popup nyitásakor/zárásakor hívódik. A `resumeMoney` a `lastTickAt`-et és az `incomeBoost` intervallumát is eltolja a szünet hosszával.
 - `showLineReward(amount)`: a sortörlés jutalmának lebegő felirata (`+X $`) a menüsávban (`#line-reward-popup`, Web Animations API).
 - Mentés: a mentések egy soron (`saveQueue`) mennek egymás után, hogy ne írják felül egymást. A pénz elmentődik minden pénzt érintő műveletnél, **minden más adatírás után** (a `data.js` `setAfterWrite` hookján keresztül), valamint az oldal elhagyásakor/elrejtésekor (`pagehide`, `visibilitychange`, `keepalive`-os kéréssel). A másodpercenkénti tick maga nem ment. A `waitForPendingSaves()` megvárja a függő mentéseket új játék előtt.
 
@@ -136,8 +143,8 @@ Induláskor betölti a `SHAPE` és `INVENTORY_ITEM` listát (a `SHAPE` csak egys
 Exportok:
 
 - `refreshInventory()`: újratölti és kirajzolja az inventoryt (egy token védi az elavult válaszok ellen), és beállítja a Shape Chest gomb tiltását.
-- `getInventoryItem(id)`: a húzott elem adatai a `placement.js`-nek (a kártyán csak a `data-inventory-item-id` van, minden más innen jön).
-- `removeInventoryItem(id)`: kiveszi az elemet a memóriából és a DOM-ból újratöltés nélkül (lerakás után, hogy ne villogjon az inventory).
+- `getInventoryItem(id)`: a húzott elem adatai a `placement.js`-nek (a kártyán csak a `data-inventory-item-id` van, minden más innen jön). A `value`-t `Number(...)`-rá alakítja.
+- `removeInventoryItem(id)`: kiveszi az elemet a memóriából és a DOM-ból újratöltés nélkül (lerakás után, hogy ne villogjon az inventory). **A szerverről való törlést nem ez végzi** – azt a `placement.js` `deleteDbById` hívása intézi, ez csak a helyi állapotot szinkronizálja.
 - `isInventoryFull()`, `getFreeInventorySlots()`: a ládák és a Dupla alakzat esemény használja (`MAX_INVENTORY_ITEMS` = 8).
 - `getInventoryShapes()`, `getBaseShapes()`: a game over ellenőrzés használja.
 
@@ -147,9 +154,11 @@ A `SHAPE` itt gyorsítótárazott, ezért **a ládák nem innen, hanem mindig fr
 
 A három láda gombjának kezelője. Az árak a fájl elején vannak (`SHAPE_CHEST_COST` 100, `UPGRADE_CHEST_COST` 2500, `BUFF_CHEST_COST` 5000), a gombok feliratát is innen állítja be. Minden láda ugyanazt a mintát követi: pénz levonása (`spendMoney`) → a hatás mentése a szerverre → eredményablak; ha a mentés elbukik, a pénz visszajár (`refund`), hiba esetén piros hibaablak jelenik meg. Az eredmények és hibák a `console.warn`-ba is bekerülnek.
 
-- **Shape Chest:** véletlen alakzat a frissen lekért `SHAPE` listából, az értéke `base_value + 6–10`. Ha az inventory tele van, a gomb tiltva van. Dupla alakzat esemény alatt `min(2, szabad hely)` azonos másolatot ment. Az `INVENTORY_ITEM` `id`-t a szerver generálja. Nyitás után lefut a `checkGameOver()`, mert az új alakzat lehet olyan, ami sehova nem fér.
+- **Shape Chest:** véletlen alakzat a frissen lekért `SHAPE` listából, az értéke `base_value + 6–10`. Ha az inventory tele van, a gomb tiltva van. Dupla alakzat esemény alatt `min(2, szabad hely)` azonos másolatot ment. Az `INVENTORY_ITEM` `id`-t a szerver generálja. A visszatérítés (`shouldRefund`) csak addig él, amíg egyetlen másolat sem mentődött el: az első sikeres `postDb` után `false`-ra áll, így ha a második másolat mentése bukik el, a láda már nem jár vissza (a játékos kapott alakzatot). Nyitás után lefut a `checkGameOver()`, mert az új alakzat lehet olyan, ami sehova nem fér.
 - **Upgrade Chest:** véletlen alap alakzat `base_value`-ja nő 10–50-nel (`PUT /SHAPE/{id}`). Csak az utána nyitott alakzatokra hat, a készletben és a táblán lévők megtartják a saját értéküket. Az eredményablak mutatja a régi és új értéket.
-- **Buff Chest:** egy véletlen eseményt választ az `EVENT_TYPE` listából (egyenlő eséllyel), `queueEvent()`-tel elmenti, és az ablakban mutatja. Az időzítő az ablak bezárásakor indul (`onClose: startPendingEvent`). Amíg egy esemény nyitva van vagy fut (`isEventBusy()`), a gomb tiltva van (az `onEventChange` frissíti).
+- **Buff Chest:** egy véletlen eseményt választ az `EVENT_TYPE` listából (egyenlő eséllyel), `queueEvent()`-tel elmenti, és az ablakban mutatja. Az időzítő az ablak bezárásakor indul (`onClose: startPendingEvent`). Amíg egy esemény nyitva van vagy fut (`isEventBusy()`), a gomb tiltva van (az `onEventChange` frissíti). A `finally` ágban `updateBuffChestButton()` fut.
+
+A `recordChest(type)` minden sikeres nyitás után növeli a statisztikát (`stats.js`).
 
 ### [events.js](../Game/web/www/js/events.js)
 
@@ -162,9 +171,13 @@ Az időzített események (Buff láda). Egyszerre egy esemény lehet aktív. Az 
 | `time_freeze` | a kész sorok nem törlődnek a fagyás végéig | `placement.js` (`isGridFrozen`) |
 | `value_burst` | sorjutalmak ×1,5 | `placement.js` (`getLineRewardMultiplier`) |
 
+A `double_shape` eseménynél a `chests.js` a `getShapeCopies()` értékét (`2`) a `getFreeInventorySlots()`-szal korlátozza: `Math.max(1, Math.min(2, szabad helyek))`. Tehát ha csak 1 szabad hely van, akkor is 1 másolat készül (a `Math.max(1, ...)` miatt), ha 0 szabad hely van, a láda gombja eleve tiltott.
+
 Életciklus: `queueEvent(type)` (kinyitva, még nem fut, `started_at`/`expires_at` üres) → `startPendingEvent()` (az ablak bezárásakor indul, 250 ms-os tick frissíti a `#game-timer` kijelzőt és az `#event-icon`-t) → `finishActiveEvent()` (törli a rekordot, majd meghívja az `onEventEnd` figyelőket; ekkor az esemény hatása már nem él). A `document.body.dataset.event` az esemény nevét tartalmazza, a CSS ezzel színezi az oldalt.
 
 Mentés/betöltés: `restoreEvent()` újratöltés után folytatja a futó eseményt. Ha az oldal bezárása alatt járt le, a `settleExpiredEvent()` zárja le a tábla betöltése után (egy Időbefagyasztásnál ekkor fizetődnek ki a kész sorok). Ha kinyitott, de el nem indított esemény volt, az újratöltéskor indul. `resetEvents()` új játékhoz mindent eldob (az end figyelők nem hívódnak). A GAME_EVENT írásai sorba vannak állítva, hogy egy késői „üres" mentés ne írjon felül egy újabb eseményt.
+
+`pauseEvents()` / `resumeEvents()`: az info popup nyitásakor/zárásakor hívódik, a `pausedAt` időbélyeggel állítja meg a visszaszámlálást (a `now()` a `pausedAt`-et adja vissza, ha nem `null`). A `resumeEvents` a `startedAt`/`expiresAt`-et is eltolja a szünet hosszával, és elmenti.
 
 ### [placement.js](../Game/web/www/js/placement.js)
 
@@ -182,13 +195,13 @@ Ez a legnagyobb fájl, itt dől el, hogy az inventoryból a táblára kerül-e e
 4. **Időbefagyasztás alatt** itt vége: a sorok a táblán maradnak, csak a passzív jövedelem frissül,
 5. a jutalom kiszámítása a törlés előtt (`getCompletedLineReward`, mert a törlés módosítja a placementeket),
 6. animáció és törlés (`clearCompletedLines`), a passzív jövedelem frissítése,
-7. `addMoney(jutalom)` és a lebegő `+X $` felirat (`showLineReward`).
+7. `addReward(jutalom)` és a lebegő `+X $` felirat (`showLineReward`).
 
 Ha valamelyik lépés elbukik, a már elmentett `PLACEMENT` visszavonódik, és a placementek és az inventory újratöltődnek. Az `isSaving` zászló megakadályozza, hogy mentés közben új húzás induljon. A lerakás végén `notifyBoardChange()` hívja a figyelőket (a `game.js` ide kötötte a `checkGameOver`-t).
 
 **Sorok törlése.** A `clearCompletedLines()` először lejátssza a törlési animációt (`play-cell-clearing`), majd **egymás után** (nem párhuzamosan, mert a json-server fájlba ír) végigmegy az érintett alakzatokon: ha egy alakzat minden cellája törlődik, a rekordot törli, ha csak egy része, akkor frissíti a megmaradt cellákkal. A rekord (és az `value`) megmarad, így az alakzat jövedelme sem csökken, amíg legalább egy cellája megvan.
 
-**Jutalom.** A `getLineReward()` egy vonalra összegzi az abban érintett alakzatok értékét és megszorozza az alakzatok számával. A `getCompletedLineReward()` összeadja az összes vonal jutalmát, és megszorozza a kombó szorzóval és az Értékrobbanás szorzójával:
+**Jutalom.** A `getLineReward(isInLine)` egy vonalra összegzi azoknak a `placements`-ben szereplő alakzatoknak az értékét, amelyeknek **legalább egy cellája az adott vonalban van** (`placement.cells.some(...)`), majd megszorozza az így érintett alakzatok számával. A `getCompletedLineReward()` összeadja az összes vonal jutalmát, és megszorozza a kombó szorzóval és az Értékrobbanás szorzójával:
 
 ```
 jutalom = Σ vonal_jutalom · max(2, 1 + 0,25 · (vonalak − 1)) · getLineRewardMultiplier()
@@ -196,7 +209,7 @@ jutalom = Σ vonal_jutalom · max(2, 1 + 0,25 · (vonalak − 1)) · getLineRewa
 
 > Megjegyzés: a `max(2, …)` miatt a kombó szorzó 1–5 egyszerre törölt vonalnál mindig 2, és csak 6 vagy több vonaltól nő (6 → 2,25). Ha az volt a szándék, hogy egy vonalnál ×1 legyen, és a kombó fokozatosan nőjön, akkor `max(1, …)` kell. A jutalom törtszám is lehet (Értékrobbanásnál ×1,5), a kijelzés `formatMoney()`-vel legfeljebb 2 tizedesre kerekít.
 
-**Időbefagyasztás vége.** Az `onEventEnd` figyelő a `time_freeze` végén meghívja a `settleFrozenLines()`-t: a fagyás alatt kitöltött összes sort és oszlopot **egyetlen kombóként** fizeti ki (egész számra kerekítve), törli, és egy „Time Freeze ended" ablakban mutatja az eredményt.
+**Időbefagyasztás vége.** Az `onEventEnd` figyelő a `time_freeze` végén meghívja a `settleFrozenLines()`-t: ez `withBoardLock`-on belül fut (hogy ne versenyezzen egy lerakással), újratölti a placementeket, kiszámolja a fagyás alatt kitöltött összes sort és oszlopot **egyetlen kombóként** (`Math.round`-dal egész számra kerekítve), törli őket, frissíti a passzív jövedelmet, kifizeti a jutalmat, és egy „Time Freeze ended" ablakban mutatja az eredményt. A blokk végén `notifyBoardChange()` hívódik (game over ellenőrzés).
 
 Bővítéskor: a lerakási szabályokat a `checkPlacement()`-be érdemes írni, a pénzt a `getCompletedLineReward()`-ba. Az alakzatméret (4) a forgatásban (`app.js`), a `SHAPE_SIZE`-ban (`placement.js`, `gameover.js`) és a CSS rácsaiban is szerepel, ezért ha változik, mindenhol módosítani kell.
 
@@ -206,31 +219,40 @@ A `checkGameOver()` a lerakás, a Shape Chest nyitás, az esemény vége és a b
 
 Ha vége a játéknak: „Game over" ablak (nem zárható be véletlenül) → „Your result" ablak (nehézség, pénz, játékidő a `started_at` alapján) → az „new game" gomb a `game.js` `restartGame`-jét hívja (`initGameOver({ onRestart })`).
 
-> Megjegyzés: az `inventory.length !== 8` feltétel miatt a függvény üres inventoryval sosem jut el a `getBaseShapes()` ágig, így a „semelyik alap alakzat nem fér el, miközben a készlet üres" eset kezelése jelenleg nem működik (halott kód). Ha ez a szándék, a feltételt `inventory.length > 0 && inventory.length !== 8`-ra vagy hasonlóra kell módosítani.
+> Megjegyzés: az `inventory.length !== 8` feltétel miatt a függvény üres inventoryval sosem jut el a `getBaseShapes()` ágig – a `candidates` mindig az inventory tartalmát kapja, a `getBaseShapes()` hívás halott kód. Ez azt jelenti, hogy a „semelyik alap alakzat nem fér el, miközben a készlet üres" eset jelenleg nem kezelhető. Ha ez a szándék, a feltételt `inventory.length > 0 && inventory.length !== 8`-ra kell módosítani (vagy külön kezelni az üres inventory esetét).
+
+### [stats.js](../Game/web/www/js/stats.js)
+
+A `GAME_STATS` tábla kezelése (láda-számlálók, legjobb kombó). A `stats` modulszintű objektum, a mentések egy `saveQueue`-n mennek egymás után (mint a `money.js`-ban).
+
+- `loadStats()`: betölti a `GAME_STATS`-t, hiba esetén üres statisztikát használ.
+- `getStats()`: másolatot ad a statisztikáról (a `game.js` info popupja használja).
+- `recordChest(type)`: növeli a megfelelő láda-számlálót (`shape` → `shape_chests`, `upgrade` → `upgrade_chests`, `buff` → `buff_chests`), és menti.
+- `recordCombo(amount)`: ha az összeg nagyobb a `best_combo`-nál, frissíti és menti (a `money.js` `addReward`-ja hívja).
+- `resetStats()`: új játékhoz nullázza a statisztikát.
 
 ## HTML
 
 Egyetlen oldal ([index.html](../Game/web/www/index.html)) három részből:
 
-- a felső menüsáv: bal oldalt a GitHub link, középen az esemény ikonja (`#event-icon`), az időzítő (`#game-timer`, `--:--`, ha nincs esemény), a pénz (`#player-money`) és a sortörlés lebegő felirata (`#line-reward-popup`), jobb oldalt a téma gomb (ide teszi a `popup.js` az újraindítás gombot is),
+- a felső menüsáv: bal oldalt a GitHub link és az info gomb (`#info-button`), középen az esemény ikonja (`#event-icon`), az időzítő (`#game-timer`, `--:--`, ha nincs esemény), a pénz (`#player-money`) és a sortörlés lebegő felirata (`#line-reward-popup`), jobb oldalt a téma gomb (ide teszi a `popup.js` az újraindítás gombot is),
 - a `main`: bal oldalt a bolt (`#chests` a három ládával: `#shape-chest-button`, `#upgrade-chest-button`, `#buff-chest-button`, alattuk az `#inventory`), jobb oldalt a `#playgrid`, amit a JS tölt fel,
 - a lábléc a készítőkkel.
 
-A JS az elemeket id vagy osztály alapján keresi (`#inventory`, `#playgrid`, `#player-money`, `#game-timer`, `#event-icon`, `#line-reward-popup`, a három láda gombja, `#theme-toggle`, `.menu-theme`), ezeket ne nevezd át a JS módosítása nélkül.
+A JS az elemeket id vagy osztály alapján keresi (`#inventory`, `#playgrid`, `#player-money`, `#game-timer`, `#event-icon`, `#line-reward-popup`, a három láda gombja, `#theme-toggle`, `#info-button`, `.menu-theme`), ezeket ne nevezd át a JS módosítása nélkül.
 
 ## CSS
 
 - [colors.css](../Game/web/www/css/colors.css): színpaletta és a téma változói (`--background`, `--surface`, `--accent`, `--valid`, `--invalid` stb.). A világos téma a `[data-theme="light"]` blokkban írja felül a változókat. Színt mindig változóval használj.
 - [layout.css](../Game/web/www/css/layout.css): az elrendezés (flex és grid), az inventory 4×2-es rácsa, a `.game-info` sáv, a `.drag-ghost` pozícionálása.
 - [style.css](../Game/web/www/css/style.css): a komponensek kinézete (gombok, inventory kártyák, tábla cellák, popupok és animációik, esemény ikon és időzítő, a `body[data-event="..."]` esemény-színezés).
+- [stats.css](../Game/web/www/css/stats.css): az info popup (`.stats-popup`, `.stats-section`, `.stats-row`, `.stats-chest-grid`) kinézete, valamint az info ikon (`#info-button`, `.info-icon`).
 - [responsive.css](../Game/web/www/css/responsive.css): töréspontok 768 px, 1200 px, 480 px és 380 px alatt, érintőképernyőre (`pointer: coarse`) külön szabályok, és `prefers-reduced-motion` esetén az animációk kikapcsolása.
 
-A JS által kapcsolgatott osztályok: `play-cell-filled` (foglalt cella), `play-cell-preview-valid` és `-invalid` (előnézet húzás közben), `play-cell-clearing` (törlési animáció), `drag-ghost`, `inventory-item-dragging`, `is-dragging` a `body`-n, `is-running` a `#game-timer`-en, `popup-window-error` a hibaablakon, valamint a `data-event` attribútum a `body`-n.
+A JS által kapcsolgatott osztályok: `play-cell-filled` (foglalt cella), `play-cell-preview-valid` és `-invalid` (előnézet húzás közben), `play-cell-clearing` (törlési animáció), `drag-ghost`, `inventory-item-dragging`, `is-dragging` a `body`-n, `is-running` a `#game-timer`-en, `popup-window-error` a hibaablakon, `stats-popup` az info ablakon, valamint a `data-event` attribútum a `body`-n.
 
 ## Tennivalók
 
-- Az `app.js` átnevezése `inventory.js`-re.
-- A kombó szorzó és a game over feltétel felülvizsgálata (lásd a megjegyzéseket a `placement.js` és `gameover.js` fejezetnél).
+- A `removeInventoryItem` átnevezése vagy dokumentálása pontosabban: jelenleg csak a helyi állapotot és a DOM-ot frissíti, a szerverről való törlést a `placement.js` végzi.
 - Hang és oktatóanyag (a [Game_Concept.md](Game_Concept.md) másodlagos céljai).
 - A `db.json` a játék közben módosul, érdemes külön tiszta alapfájlt tartani.
-- A pénz mentése pénzt érintő műveletnél, minden más adatírás után és az oldal elhagyásakor történik; ha a böngésző összeomlik, a legutóbbi mentés óta felgyűlt jövedelem a `last_save_at` alapján pótlódik betöltéskor.
